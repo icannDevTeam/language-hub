@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Practice - Mandarin Pronunciation Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+
+        .nav-link {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: none; /* Hidden from students */
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .lesson-list {
+            list-style: none;
+        }
+
+        .lesson-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .lesson-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .lesson-item.selected {
+            background: #667eea;
+            color: white;
+        }
+
+        .lesson-item strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .recording-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: red;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .audio-player {
+            width: 100%;
+            margin: 15px 0;
+        }
+
+        .score-display {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            color: white;
+            margin: 20px 0;
+        }
+
+        .score-number {
+            font-size: 4em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .score-bar {
+            width: 100%;
+            height: 30px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .score-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            transition: width 1s ease-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .feedback-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .feedback-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .feedback-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 5px;
+            border-left: 3px solid #667eea;
+            white-space: pre-line;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            opacity: 0.9;
+        }
+
+        .history-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-score {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .badge-sentence { background: #2196F3; color: white; }
+        .badge-word { background: #ff9800; color: white; }
+        .badge-vowel { background: #9c27b0; color: white; }
+
+        .practice-text {
+            font-size: 1.8em;
+            color: #333;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>👨‍🎓 Student Practice</h1>
+                <p>Master Mandarin pronunciation with AI feedback</p>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Lessons Selection -->
+            <div class="card">
+                <h2>🎯 Select a Lesson to Practice</h2>
+                <ul class="lesson-list" id="lessons-list">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📚</div>
+                        <p>Loading lessons...</p>
+                    </div>
+                </ul>
+            </div>
+
+            <!-- Practice Area -->
+            <div id="practice-area" style="display: none;">
+                <div class="card">
+                    <h2 id="current-lesson-title">Practice</h2>
+                    <div class="practice-text" id="current-lesson-text"></div>
+
+                    <h3>🎧 Listen to Master Recording:</h3>
+                    <div id="master-audio-player"></div>
+
+                    <h3 style="margin-top: 30px;">🎤 Your Recording:</h3>
+                    <div>
+                        <button class="btn btn-danger" id="student-record-btn">
+                            🎤 Start Recording
+                        </button>
+                        <button class="btn btn-primary" id="student-stop-btn" disabled>
+                            ⏹️ Stop Recording
+                        </button>
+                    </div>
+                    <div id="student-audio-preview"></div>
+
+                    <button class="btn btn-success" id="analyze-btn" disabled>
+                        🔍 Analyze My Pronunciation
+                    </button>
+                </div>
+
+                <!-- Results Area -->
+                <div id="results-area" style="display: none;">
+                    <div class="score-display">
+                        <h2>Your Score</h2>
+                        <div class="score-number" id="score-number">--</div>
+                        <div class="score-bar">
+                            <div class="score-fill" id="score-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="feedback-section">
+                        <h3>🤖 AI Feedback & Analysis</h3>
+                        <div id="ai-feedback">
+                            <div class="loading"></div> Getting AI feedback...
+                        </div>
+                    </div>
+
+                    <div class="feedback-section">
+                        <h3>📊 Detailed Metrics</h3>
+                        <div id="detailed-metrics"></div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="btn btn-primary" onclick="tryAgain()">
+                            🔄 Try Again
+                        </button>
+                        <button class="btn btn-primary" onclick="backToLessons()">
+                            📚 Choose Another Lesson
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Dashboard -->
+            <div class="card">
+                <h2>📈 Your Progress</h2>
+                <div class="dashboard">
+                    <div class="stat-card">
+                        <h3 id="total-attempts">0</h3>
+                        <p>Total Attempts</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="avg-score">0</h3>
+                        <p>Average Score</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="best-score">0</h3>
+                        <p>Best Score</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h3>Recent Practice Sessions</h3>
+                    <div id="history-list">
+                        <div class="empty-state">
+                            <p>No practice sessions yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let mediaRecorder;
+        let audioChunks = [];
+        let currentLesson = null;
+        let studentAudioBlob = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadLessons();
+            loadStats();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('student-record-btn').addEventListener('click', startRecording);
+            document.getElementById('student-stop-btn').addEventListener('click', stopRecording);
+            document.getElementById('analyze-btn').addEventListener('click', analyzeRecording);
+        }
+
+        // Load Lessons
+        async function loadLessons() {
+            try {
+                const response = await fetch('/api/lessons');
+                const lessons = await response.json();
+
+                const lessonsList = document.getElementById('lessons-list');
+
+                if (lessons.length === 0) {
+                    lessonsList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📭</div>
+                            <p>No lessons available yet. Ask your teacher to create some lessons!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                lessonsList.innerHTML = '';
+                lessons.forEach(lesson => {
+                    const li = createLessonItem(lesson);
+                    lessonsList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error loading lessons:', error);
+            }
+        }
+
+        function createLessonItem(lesson) {
+            const li = document.createElement('li');
+            li.className = 'lesson-item';
+            
+            const badgeClass = `badge-${lesson.type}`;
+            
+            li.innerHTML = `
+                <strong>${lesson.title} <span class="badge ${badgeClass}">${lesson.type}</span></strong>
+                <small>${lesson.text}</small>
+            `;
+
+            li.onclick = () => selectLesson(lesson.id);
+
+            return li;
+        }
+
+        // Select Lesson
+        async function selectLesson(lessonId) {
+            try {
+                const response = await fetch(`/api/lessons/${lessonId}`);
+                currentLesson = await response.json();
+
+                // Update UI
+                document.querySelectorAll('.lesson-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                event.target.closest('.lesson-item').classList.add('selected');
+
+                document.getElementById('practice-area').style.display = 'block';
+                document.getElementById('results-area').style.display = 'none';
+                document.getElementById('current-lesson-title').textContent = currentLesson.title;
+                document.getElementById('current-lesson-text').textContent = currentLesson.text;
+
+                // Display master audio
+                document.getElementById('master-audio-player').innerHTML = `
+                    <audio controls class="audio-player" src="${currentLesson.audioData}"></audio>
+                `;
+
+                // Reset student recording
+                document.getElementById('student-audio-preview').innerHTML = '';
+                document.getElementById('analyze-btn').disabled = true;
+                studentAudioBlob = null;
+
+                // Scroll to practice area
+                document.getElementById('practice-area').scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error loading lesson:', error);
+            }
+        }
+
+        // Recording Functions
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    studentAudioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const audioUrl = URL.createObjectURL(studentAudioBlob);
+                    
+                    document.getElementById('student-audio-preview').innerHTML = `
+                        <audio controls class="audio-player" src="${audioUrl}"></audio>
+                    `;
+                    
+                    document.getElementById('analyze-btn').disabled = false;
+                    stream.getTracks().forEach(track => track.stop());
+                };
+
+                mediaRecorder.start();
+                document.getElementById('student-record-btn').disabled = true;
+                document.getElementById('student-stop-btn').disabled = false;
+                document.getElementById('student-record-btn').innerHTML = '<span class="recording-indicator"></span> Recording...';
+            } catch (error) {
+                alert('Error accessing microphone: ' + error.message);
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                document.getElementById('student-record-btn').disabled = false;
+                document.getElementById('student-stop-btn').disabled = true;
+                document.getElementById('student-record-btn').innerHTML = '🎤 Start Recording';
+            }
+        }
+
+        // Analyze Recording
+        async function analyzeRecording() {
+            if (!studentAudioBlob || !currentLesson) {
+                alert('Please record your pronunciation first');
+                return;
+            }
+
+            const analyzeBtn = document.getElementById('analyze-btn');
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerHTML = '<span class="loading"></span> Analyzing...';
+
+            // Calculate score (simulated - in production, use real audio analysis)
+            const score = calculateScore();
+
+            // Display results
+            displayResults(score);
+
+            // Get AI feedback
+            await getAIFeedback(score);
+
+            // Save practice session
+            await savePracticeSession(score);
+
+            analyzeBtn.disabled = false;
+            analyzeBtn.innerHTML = '🔍 Analyze My Pronunciation';
+        }
+
+        function calculateScore() {
+            // Simulated scoring (in production, implement real audio analysis)
+            const baseScore = 60 + Math.random() * 35;
+            return Math.round(baseScore);
+        }
+
+        function displayResults(score) {
+            document.getElementById('results-area').style.display = 'block';
+            document.getElementById('score-number').textContent = score;
+            document.getElementById('score-fill').style.width = score + '%';
+
+            // Generate detailed metrics
+            const toneAccuracy = Math.max(50, Math.min(100, score - 5 + Math.random() * 10));
+            const clarity = Math.max(50, Math.min(100, score + Math.random() * 10));
+            const rhythm = Math.max(50, Math.min(100, score - Math.random() * 5));
+
+            document.getElementById('detailed-metrics').innerHTML = `
+                <div class="feedback-item">
+                    <strong>Tone Accuracy:</strong> ${Math.round(toneAccuracy)}%
+                </div>
+                <div class="feedback-item">
+                    <strong>Clarity:</strong> ${Math.round(clarity)}%
+                </div>
+                <div class="feedback-item">
+                    <strong>Rhythm & Pacing:</strong> ${Math.round(rhythm)}%
+                </div>
+            `;
+
+            // Scroll to results
+            document.getElementById('results-area').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function getAIFeedback(score) {
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        lessonTitle: currentLesson.title,
+                        lessonText: currentLesson.text,
+                        lessonType: currentLesson.type,
+                        score: score
+                    })
+                });
+
+                const data = await response.json();
+                const feedback = data.feedback;
+
+                // Format and display feedback
+                document.getElementById('ai-feedback').innerHTML = `
+                    <div class="feedback-item">${feedback.replace(/\n/g, '<br>')}</div>
+                `;
+            } catch (error) {
+                console.error('Error getting AI feedback:', error);
+                document.getElementById('ai-feedback').innerHTML = `
+                    <div class="feedback-item">
+                        Score: ${score}/100<br><br>
+                        ${score >= 85 ? 'Excellent work! Keep practicing to maintain this level.' : 
+                          score >= 70 ? 'Good effort! Focus on tone accuracy and clarity.' : 
+                          'Keep practicing! Listen carefully to the master recording and try again.'}
+                    </div>
+                `;
+            }
+        }
+
+        async function savePracticeSession(score) {
+            try {
+                await fetch('/api/practice', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        lessonId: currentLesson.id,
+                        lessonTitle: currentLesson.title,
+                        score: score
+                    })
+                });
+
+                // Reload stats
+                loadStats();
+            } catch (error) {
+                console.error('Error saving practice session:', error);
+            }
+        }
+
+        // Load Statistics
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/practice/stats');
+                const stats = await response.json();
+
+                document.getElementById('total-attempts').textContent = stats.totalAttempts;
+                document.getElementById('avg-score').textContent = stats.avgScore;
+                document.getElementById('best-score').textContent = stats.bestScore;
+
+                // Display history
+                const historyList = document.getElementById('history-list');
+                
+                if (stats.recentSessions.length === 0) {
+                    historyList.innerHTML = `
+                        <div class="empty-state">
+                            <p>No practice sessions yet. Start practicing!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                historyList.innerHTML = stats.recentSessions.map(session => `
+                    <div class="history-item">
+                        <div>
+                            <strong>${session.lessonTitle}</strong><br>
+                            <small>${new Date(session.timestamp).toLocaleString()}</small>
+                        </div>
+                        <div class="history-score">${session.score}</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        function tryAgain() {
+            document.getElementById('results-area').style.display = 'none';
+            document.getElementById('student-audio-preview').innerHTML = '';
+            document.getElementById('analyze-btn').disabled = true;
+            studentAudioBlob = null;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function backToLessons() {
+            document.getElementById('practice-area').style.display = 'none';
+            currentLesson = null;
+            document.querySelectorAll('.lesson-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

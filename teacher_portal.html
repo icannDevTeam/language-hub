@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mandarin Teacher Portal</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .student-view-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .student-view-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            border: none;
+            background: transparent;
+        }
+
+        .nav-tab:hover {
+            background: #e9ecef;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upload-zone {
+            border: 3px dashed #4CAF50;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+            background: #f8fff8;
+        }
+
+        .upload-zone:hover {
+            border-color: #45a049;
+            background: #f0fff0;
+        }
+
+        .upload-zone.dragover {
+            border-color: #2e7d32;
+            background: #e8f5e8;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4em;
+            color: #4CAF50;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .upload-subtext {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .input-group input,
+        .input-group textarea,
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .lesson-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .lesson-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .lesson-card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transform: translateY(-3px);
+        }
+
+        .lesson-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .lesson-info h3 {
+            margin: 0 0 5px 0;
+            color: #333;
+            font-size: 1.2em;
+        }
+
+        .lesson-info p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .lesson-type {
+            background: #4CAF50;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .lesson-content {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .lesson-text {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .audio-player {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .lesson-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.85em;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+
+
+        /* Authentication Modal Styles */
+        .auth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-modal.show {
+            display: flex;
+        }
+
+        .auth-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-radius: 25px;
+            background: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .auth-tab.active {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .auth-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 15px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .auth-btn:hover {
+            background: #45a049;
+        }
+
+        .auth-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .pending-approval {
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .stat-card p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .upload-progress {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .shared-library {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .library-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .filter-select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .lesson-card:hover .delete-btn {
+            display: block;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: #dc3545;
+        }
+
+        .notification.warning {
+            background: #ffc107;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Authentication Modal -->
+    <div class="auth-modal" id="auth-modal">
+        <div class="auth-content">
+            <h2>🎓 Teacher Access</h2>
+            <p style="color: #666; margin-bottom: 20px;">Join the BINUS Mandarin Teaching Community</p>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchAuthTab('login')">登录 Login</button>
+                <button class="auth-tab" onclick="switchAuthTab('signup')">注册 Sign Up</button>
+            </div>
+
+            <form class="auth-form active" id="login-form">
+                <input type="email" class="auth-input" id="login-email" placeholder="📧 Email address" required>
+                <input type="password" class="auth-input" id="login-password" placeholder="🔒 Password" required>
+                <button type="submit" class="auth-btn">🚀 Login & Start Teaching</button>
+            </form>
+
+            <form class="auth-form" id="signup-form">
+                <input type="text" class="auth-input" id="signup-name" placeholder="👨‍🏫 Full Name" required>
+                <input type="email" class="auth-input" id="signup-email" placeholder="📧 Email address" required>
+                <input type="password" class="auth-input" id="signup-password" placeholder="🔒 Create Password (6+ chars)" minlength="6" required>
+                <button type="submit" class="auth-btn">📝 Request Teacher Access</button>
+                <p style="font-size: 0.85em; color: #666; margin-top: 10px;">
+                    * Account requires admin approval
+                </p>
+            </form>
+
+            <div id="pending-message" class="pending-approval" style="display: none;">
+                <h3>⏳ Pending Approval</h3>
+                <p>Your teacher account is waiting for admin approval. You'll receive an email when approved!</p>
+                <button class="btn" onclick="auth.signOut()" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 10px 20px; border-radius: 20px; margin-top: 15px;">
+                    🔄 Try Different Account
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="main-container">
+        <div class="header">
+            <a href="mandarin_pronunciation_tool.html" class="student-view-btn">👨‍🎓 Student View</a>
+            <h1>👨‍🏫 Mandarin Teacher Portal</h1>
+            <p>Create, manage, and share pronunciation lessons with your students</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('create')">📝 Create Lessons</button>
+            <button class="nav-tab" onclick="switchTab('manage')">📚 My Lessons</button>
+            <button class="nav-tab" onclick="switchTab('library')">🌐 Shared Library</button>
+            <button class="nav-tab" onclick="switchTab('analytics')">📊 Analytics</button>
+        </div>
+
+        <div class="content">
+            <!-- Create Lessons Tab -->
+            <div id="create-tab" class="tab-content active">
+                <div class="card">
+                    <h2>📝 Create New Lesson</h2>
+                    
+                    <div class="input-group">
+                        <label>Lesson Title</label>
+                        <input type="text" id="lesson-title" placeholder="e.g., Basic Greetings - Hello">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Lesson Category</label>
+                        <select id="lesson-category">
+                            <option value="vowels">Vowels (韵母)</option>
+                            <option value="consonants">Consonants (声母)</option>
+                            <option value="tones">Tones (声调)</option>
+                            <option value="words">Words (词汇)</option>
+                            <option value="sentences">Sentences (句子)</option>
+                            <option value="conversation">Conversation (对话)</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Difficulty Level</label>
+                        <select id="lesson-difficulty">
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Lesson Text/Pinyin</label>
+                        <textarea id="lesson-text" rows="4" placeholder="Enter the Chinese text and pinyin that students should practice&#10;Example: 你好 (nǐ hǎo) - Hello"></textarea>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Teaching Notes (Optional)</label>
+                        <textarea id="lesson-notes" rows="3" placeholder="Add pronunciation tips, cultural context, or teaching notes for students"></textarea>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>🎤 Audio Recording & Upload</h2>
+                    
+                    <div class="upload-zone" id="audio-upload-zone" onclick="document.getElementById('audio-file-input').click()">
+                        <div class="upload-icon">🎵</div>
+                        <div class="upload-text">Upload Audio File or Record</div>
+                        <div class="upload-subtext">Drag & drop audio files here or click to browse<br>Supported: MP3, WAV, M4A, OGG</div>
+                    </div>
+                    
+                    <input type="file" id="audio-file-input" class="file-input" accept="audio/*" multiple>
+                    
+                    <div class="upload-progress" id="upload-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill"></div>
+                        </div>
+                        <div class="progress-text" id="progress-text">Uploading... 0%</div>
+                    </div>
+
+                    <div style="text-align: center; margin: 20px 0;">
+                        <strong>OR</strong>
+                    </div>
+
+                    <div style="text-align: center;">
+                        <button class="btn btn-primary" id="record-btn" onclick="toggleRecording()">
+                            🎤 Start Recording
+                        </button>
+                        <button class="btn btn-secondary" id="stop-btn" onclick="stopRecording()" disabled>
+                            ⏹️ Stop Recording
+                        </button>
+                    </div>
+
+                    <div id="audio-preview"></div>
+                </div>
+
+                <div class="card">
+                    <h2>🚀 Publish Lesson</h2>
+                    <div style="display: flex; gap: 15px; align-items: center;">
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="share-publicly">
+                            Share in Public Library (other teachers can use this lesson)
+                        </label>
+                    </div>
+                    <br>
+                    <button class="btn btn-primary" onclick="saveLesson()" id="save-lesson-btn">
+                        💾 Save & Publish Lesson
+                    </button>
+                </div>
+            </div>
+
+            <!-- My Lessons Tab -->
+            <div id="manage-tab" class="tab-content">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3 id="total-lessons">0</h3>
+                        <p>Total Lessons</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="public-lessons">0</h3>
+                        <p>Public Lessons</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="total-students">0</h3>
+                        <p>Student Sessions</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>📚 My Lessons</h2>
+                    <div class="search-bar">
+                        <input type="text" class="search-input" id="my-lessons-search" placeholder="Search my lessons..." onkeyup="filterMyLessons()">
+                        <select class="filter-select" id="my-lessons-filter" onchange="filterMyLessons()">
+                            <option value="all">All Categories</option>
+                            <option value="vowels">Vowels</option>
+                            <option value="consonants">Consonants</option>
+                            <option value="tones">Tones</option>
+                            <option value="words">Words</option>
+                            <option value="sentences">Sentences</option>
+                            <option value="conversation">Conversation</option>
+                        </select>
+                    </div>
+                    <div class="lesson-grid" id="my-lessons-grid">
+                        <!-- Lessons will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shared Library Tab -->
+            <div id="library-tab" class="tab-content">
+                <div class="shared-library">
+                    <div class="library-header">
+                        <h2>🌐 Community Lesson Library</h2>
+                        <p>Discover and use lessons shared by other teachers</p>
+                    </div>
+                    
+                    <div class="search-bar">
+                        <input type="text" class="search-input" id="library-search" placeholder="Search community lessons..." onkeyup="filterLibraryLessons()">
+                        <select class="filter-select" id="library-filter" onchange="filterLibraryLessons()">
+                            <option value="all">All Categories</option>
+                            <option value="vowels">Vowels</option>
+                            <option value="consonants">Consonants</option>
+                            <option value="tones">Tones</option>
+                            <option value="words">Words</option>
+                            <option value="sentences">Sentences</option>
+                            <option value="conversation">Conversation</option>
+                        </select>
+                        <select class="filter-select" id="difficulty-filter" onchange="filterLibraryLessons()">
+                            <option value="all">All Levels</option>
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </div>
+
+                    <div class="lesson-grid" id="library-lessons-grid">
+                        <!-- Community lessons will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="analytics-tab" class="tab-content">
+                <div class="card">
+                    <h2>📊 Teaching Analytics</h2>
+                    <p>Track how your students are performing with your lessons</p>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3 id="total-practice-sessions">0</h3>
+                            <p>Practice Sessions</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="avg-student-score">0</h3>
+                            <p>Average Score</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="most-popular-lesson">-</h3>
+                            <p>Most Popular Lesson</p>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px;">
+                        <h3>📈 Recent Student Activity</h3>
+                        <div id="recent-activity">
+                            <!-- Recent activity will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <span id="notification-text">Notification message</span>
+    </div>
+
+    <script>
+        // Global variables
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+        let teacherLessons = JSON.parse(localStorage.getItem('teacherLessons') || '[]');
+        let sharedLessons = JSON.parse(localStorage.getItem('sharedLessons') || '[]');
+        let currentAudioBlob = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDragAndDrop();
+            loadMyLessons();
+            loadSharedLibrary();
+            updateStats();
+            loadAnalytics();
+        });
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Remove active class from all tabs and content
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected tab and content
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        // Drag and drop functionality
+        function initializeDragAndDrop() {
+            const uploadZone = document.getElementById('audio-upload-zone');
+            const fileInput = document.getElementById('audio-file-input');
+
+            uploadZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadZone.classList.add('dragover');
+            });
+
+            uploadZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+            });
+
+            uploadZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                handleFileUpload(files);
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                handleFileUpload(e.target.files);
+            });
+        }
+
+        // Handle file upload
+        function handleFileUpload(files) {
+            if (files.length === 0) return;
+
+            const file = files[0];
+            
+            // Validate file type
+            if (!file.type.startsWith('audio/')) {
+                showNotification('Please select an audio file (MP3, WAV, M4A, OGG)', 'error');
+                return;
+            }
+
+            // Validate file size (max 10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                showNotification('File size must be less than 10MB', 'error');
+                return;
+            }
+
+            // Simulate upload progress
+            simulateUpload(file);
+        }
+
+        // Simulate file upload with progress
+        function simulateUpload(file) {
+            const progressContainer = document.getElementById('upload-progress');
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+
+            progressContainer.style.display = 'block';
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 100) progress = 100;
+                
+                progressFill.style.width = progress + '%';
+                progressText.textContent = `Uploading... ${Math.round(progress)}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    
+                    // Convert file to blob URL for preview
+                    const audioUrl = URL.createObjectURL(file);
+                    currentAudioBlob = file;
+                    
+                    document.getElementById('audio-preview').innerHTML = `
+                        <div style="margin-top: 20px; padding: 15px; background: #f0fff0; border-radius: 8px;">
+                            <h4>✅ Audio Uploaded Successfully!</h4>
+                            <p><strong>File:</strong> ${file.name}</p>
+                            <p><strong>Size:</strong> ${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                            <audio controls class="audio-player" src="${audioUrl}"></audio>
+                        </div>
+                    `;
+                    
+                    progressContainer.style.display = 'none';
+                    showNotification('Audio file uploaded successfully!', 'success');
+                }
+            }, 100);
+        }
+
+        // Recording functionality
+        async function toggleRecording() {
+            if (!isRecording) {
+                startRecording();
+            } else {
+                stopRecording();
+            }
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    currentAudioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const audioUrl = URL.createObjectURL(currentAudioBlob);
+                    
+                    document.getElementById('audio-preview').innerHTML = `
+                        <div style="margin-top: 20px; padding: 15px; background: #f0fff0; border-radius: 8px;">
+                            <h4>✅ Recording Complete!</h4>
+                            <p><strong>Duration:</strong> ${Math.round(audioChunks.length * 0.1)}s</p>
+                            <audio controls class="audio-player" src="${audioUrl}"></audio>
+                        </div>
+                    `;
+                    
+                    stream.getTracks().forEach(track => track.stop());
+                    showNotification('Recording completed successfully!', 'success');
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                
+                document.getElementById('record-btn').innerHTML = '🔴 Recording...';
+                document.getElementById('record-btn').style.background = '#dc3545';
+                document.getElementById('stop-btn').disabled = false;
+                
+                showNotification('Recording started...', 'info');
+                
+            } catch (error) {
+                showNotification('Error accessing microphone: ' + error.message, 'error');
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                isRecording = false;
+                
+                document.getElementById('record-btn').innerHTML = '🎤 Start Recording';
+                document.getElementById('record-btn').style.background = '#4CAF50';
+                document.getElementById('stop-btn').disabled = true;
+            }
+        }
+
+        // Save lesson
+        function saveLesson() {
+            const title = document.getElementById('lesson-title').value;
+            const category = document.getElementById('lesson-category').value;
+            const difficulty = document.getElementById('lesson-difficulty').value;
+            const text = document.getElementById('lesson-text').value;
+            const notes = document.getElementById('lesson-notes').value;
+            const sharePublicly = document.getElementById('share-publicly').checked;
+
+            if (!title || !text || !currentAudioBlob) {
+                showNotification('Please fill all required fields and add audio', 'error');
+                return;
+            }
+
+            // Convert audio blob to base64 for storage
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                const audioData = reader.result;
+                
+                const lesson = {
+                    id: Date.now(),
+                    title,
+                    category,
+                    difficulty,
+                    text,
+                    notes,
+                    audioData,
+                    isPublic: sharePublicly,
+                    teacherName: 'Teacher Name', // In real app, get from auth
+                    createdAt: new Date().toISOString(),
+                    usageCount: 0,
+                    rating: 0,
+                    reviews: []
+                };
+
+                teacherLessons.push(lesson);
+                localStorage.setItem('teacherLessons', JSON.stringify(teacherLessons));
+
+                if (sharePublicly) {
+                    sharedLessons.push(lesson);
+                    localStorage.setItem('sharedLessons', JSON.stringify(sharedLessons));
+                }
+
+                // Reset form
+                document.getElementById('lesson-title').value = '';
+                document.getElementById('lesson-text').value = '';
+                document.getElementById('lesson-notes').value = '';
+                document.getElementById('audio-preview').innerHTML = '';
+                document.getElementById('share-publicly').checked = false;
+                currentAudioBlob = null;
+
+                showNotification('Lesson saved successfully!', 'success');
+                loadMyLessons();
+                loadSharedLibrary();
+                updateStats();
+            };
+            reader.readAsDataURL(currentAudioBlob);
+        }
+
+        // Load my lessons
+        function loadMyLessons() {
+            const grid = document.getElementById('my-lessons-grid');
+            
+            if (teacherLessons.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; color: #666; grid-column: 1/-1;">No lessons created yet. Create your first lesson!</p>';
+                return;
+            }
+
+            grid.innerHTML = teacherLessons.map(lesson => `
+                <div class="lesson-card">
+                    <button class="delete-btn" onclick="deleteLesson('${lesson.id}')" title="Delete lesson">×</button>
+                    <div class="lesson-header">
+                        <div class="lesson-info">
+                            <h3>${lesson.title}</h3>
+                            <p>Created ${new Date(lesson.createdAt).toLocaleDateString()}</p>
+                        </div>
+                        <div>
+                            <span class="lesson-type">${lesson.category}</span>
+                            ${lesson.isPublic ? '<span class="lesson-type" style="background: #2196F3;">PUBLIC</span>' : ''}
+                        </div>
+                    </div>
+                    <div class="lesson-content">
+                        <div class="lesson-text">${lesson.text}</div>
+                        ${lesson.notes ? `<p><strong>Notes:</strong> ${lesson.notes}</p>` : ''}
+                        <audio controls class="audio-player" src="${lesson.audioData}"></audio>
+                    </div>
+                    <div class="lesson-actions">
+                        <button class="btn btn-primary btn-small" onclick="editLesson('${lesson.id}')">✏️ Edit</button>
+                        <button class="btn btn-secondary btn-small" onclick="duplicateLesson('${lesson.id}')">📋 Duplicate</button>
+                        <button class="btn btn-secondary btn-small" onclick="viewAnalytics('${lesson.id}')">📊 Analytics</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load shared library
+        function loadSharedLibrary() {
+            const grid = document.getElementById('library-lessons-grid');
+            
+            if (sharedLessons.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; color: #666; grid-column: 1/-1;">No shared lessons available yet.</p>';
+                return;
+            }
+
+            grid.innerHTML = sharedLessons.map(lesson => `
+                <div class="lesson-card">
+                    <div class="lesson-header">
+                        <div class="lesson-info">
+                            <h3>${lesson.title}</h3>
+                            <p>by ${lesson.teacherName} • ${new Date(lesson.createdAt).toLocaleDateString()}</p>
+                        </div>
+                        <div>
+                            <span class="lesson-type">${lesson.category}</span>
+                            <span class="lesson-type" style="background: ${getDifficultyColor(lesson.difficulty)};">${lesson.difficulty.toUpperCase()}</span>
+                        </div>
+                    </div>
+                    <div class="lesson-content">
+                        <div class="lesson-text">${lesson.text}</div>
+                        ${lesson.notes ? `<p><strong>Notes:</strong> ${lesson.notes}</p>` : ''}
+                        <audio controls class="audio-player" src="${lesson.audioData}"></audio>
+                    </div>
+                    <div class="lesson-actions">
+                        <button class="btn btn-primary btn-small" onclick="useLesson('${lesson.id}')">📥 Use in My Class</button>
+                        <button class="btn btn-secondary btn-small" onclick="rateLesson('${lesson.id}')">⭐ Rate</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Helper functions
+        function getDifficultyColor(difficulty) {
+            const colors = {
+                'beginner': '#4CAF50',
+                'intermediate': '#FF9800',
+                'advanced': '#f44336'
+            };
+            return colors[difficulty] || '#6c757d';
+        }
+
+        function deleteLesson(lessonId) {
+            if (confirm('Are you sure you want to delete this lesson?')) {
+                teacherLessons = teacherLessons.filter(lesson => lesson.id != lessonId);
+                localStorage.setItem('teacherLessons', JSON.stringify(teacherLessons));
+                loadMyLessons();
+                updateStats();
+                showNotification('Lesson deleted successfully', 'success');
+            }
+        }
+
+        function useLesson(lessonId) {
+            const lesson = sharedLessons.find(l => l.id == lessonId);
+            if (lesson) {
+                // Copy to teacher's lessons
+                const copiedLesson = { ...lesson, id: Date.now(), isPublic: false };
+                teacherLessons.push(copiedLesson);
+                localStorage.setItem('teacherLessons', JSON.stringify(teacherLessons));
+                
+                showNotification('Lesson added to your collection!', 'success');
+                loadMyLessons();
+                updateStats();
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('total-lessons').textContent = teacherLessons.length;
+            document.getElementById('public-lessons').textContent = teacherLessons.filter(l => l.isPublic).length;
+            document.getElementById('total-students').textContent = Math.floor(Math.random() * 100); // Simulated
+        }
+
+        function loadAnalytics() {
+            // Simulated analytics data
+            document.getElementById('total-practice-sessions').textContent = Math.floor(Math.random() * 500);
+            document.getElementById('avg-student-score').textContent = Math.floor(70 + Math.random() * 25);
+            document.getElementById('most-popular-lesson').textContent = teacherLessons.length > 0 ? teacherLessons[0].title : '-';
+        }
+
+        function filterMyLessons() {
+            // Implementation for filtering lessons
+            loadMyLessons(); // Simplified for now
+        }
+
+        function filterLibraryLessons() {
+            // Implementation for filtering library
+            loadSharedLibrary(); // Simplified for now
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notification-text');
+            
+            notificationText.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Placeholder functions for additional features
+        function editLesson(lessonId) {
+            showNotification('Edit functionality coming soon!', 'info');
+        }
+
+        function duplicateLesson(lessonId) {
+            const lesson = teacherLessons.find(l => l.id == lessonId);
+            if (lesson) {
+                const duplicated = { ...lesson, id: Date.now(), title: lesson.title + ' (Copy)' };
+                teacherLessons.push(duplicated);
+                localStorage.setItem('teacherLessons', JSON.stringify(teacherLessons));
+                loadMyLessons();
+                updateStats();
+                showNotification('Lesson duplicated successfully!', 'success');
+            }
+        }
+
+        function viewAnalytics(lessonId) {
+            showNotification('Analytics view coming soon!', 'info');
+        }
+
+        function rateLesson(lessonId) {
+            showNotification('Rating system coming soon!', 'info');
+        }
+
+
+    </script>
+    
+    <!-- Include Supabase Configuration -->
+    <script src="supabase-config.js"></script>
+    
+    <script>
+        // Authentication and Supabase Integration
+        let currentTeacher = null;
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkAuthState();
+            setupAuthForms();
+        });
+
+        async function checkAuthState() {
+            const { user, error } = await auth.getCurrentUser();
+            
+            if (user && user.email) {
+                // Check if teacher is approved
+                const { data: teacher, error: teacherError } = await db.getTeacher(user.email);
+                
+                if (teacher) {
+                    currentTeacher = teacher;
+                    hideAuthModal();
+                    showNotification(`欢迎回来! Welcome back, ${teacher.name}! 🎉`, 'success');
+                } else {
+                    // Show pending approval message
+                    showPendingApproval();
+                }
+            } else {
+                showAuthModal();
+            }
+        }
+
+        function setupAuthForms() {
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
+            document.getElementById('signup-form').addEventListener('submit', handleSignup);
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            const loginBtn = e.target.querySelector('.auth-btn');
+            loginBtn.disabled = true;
+            loginBtn.textContent = '登录中... Logging in...';
+
+            const { data, error } = await auth.signIn(email, password);
+            
+            if (error) {
+                showNotification(`登录失败! Login failed: ${error.message}`, 'error');
+                loginBtn.disabled = false;
+                loginBtn.textContent = '🚀 Login & Start Teaching';
+                return;
+            }
+
+            // Check teacher approval status
+            const { data: teacher, error: teacherError } = await db.getTeacher(email);
+            
+            if (teacher) {
+                currentTeacher = teacher;
+                hideAuthModal();
+                showNotification(`成功! Successfully logged in! 🎉`, 'success');
+                await loadTeacherData();
+            } else {
+                showPendingApproval();
+            }
+            
+            loginBtn.disabled = false;
+            loginBtn.textContent = '🚀 Login & Start Teaching';
+        }
+
+        async function handleSignup(e) {
+            e.preventDefault();
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+
+            const signupBtn = e.target.querySelector('.auth-btn');
+            signupBtn.disabled = true;
+            signupBtn.textContent = '注册中... Registering...';
+
+            // Create auth user
+            const { data: authData, error: authError } = await auth.signUp(email, password, name);
+            
+            if (authError) {
+                showNotification(`注册失败! Signup failed: ${authError.message}`, 'error');
+                signupBtn.disabled = false;
+                signupBtn.textContent = '📝 Request Teacher Access';
+                return;
+            }
+
+            // Create teacher record
+            const { data: teacher, error: teacherError } = await db.createTeacher(email, name);
+            
+            if (teacherError) {
+                showNotification(`创建教师记录失败! Failed to create teacher record: ${teacherError.message}`, 'error');
+            } else {
+                // Check if auto-approved (BINUS email)
+                if (email.toLowerCase().endsWith('@binus.edu')) {
+                    showNotification(`🎉 欢迎BINUS老师! Welcome BINUS Faculty! 您已自动获得批准 You are automatically approved! 🏫`, 'success');
+                    // Refresh to show teacher portal
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    showNotification(`申请已提交! Registration successful! 请等待管理员批准 Please wait for admin approval! 📧`, 'success');
+                    showPendingApproval();
+                }
+            }
+            
+            signupBtn.disabled = false;
+            signupBtn.textContent = '📝 Request Teacher Access';
+        }
+
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            
+            document.querySelector(`[onclick="switchAuthTab('${tab}')"]`).classList.add('active');
+            document.getElementById(`${tab}-form`).classList.add('active');
+        }
+
+        function showAuthModal() {
+            document.getElementById('auth-modal').classList.add('show');
+            document.getElementById('main-container').style.filter = 'blur(5px)';
+        }
+
+        function hideAuthModal() {
+            document.getElementById('auth-modal').classList.remove('show');
+            document.getElementById('main-container').style.filter = 'none';
+        }
+
+        function showPendingApproval() {
+            document.getElementById('pending-message').style.display = 'block';
+            document.querySelectorAll('.auth-form').forEach(f => f.style.display = 'none');
+            document.querySelector('.auth-tabs').style.display = 'none';
+        }
+
+        async function loadTeacherData() {
+            if (!currentTeacher) return;
+            
+            // Load teacher's lessons from Supabase
+            await loadMyLessonsFromDB();
+            updateStats();
+        }
+
+
+
+        async function loadMyLessonsFromDB() {
+            if (!currentTeacher) return;
+            
+            const { data: lessons, error } = await db.getLessonsByTeacher(currentTeacher.id);
+            
+            if (error) {
+                console.error('Error loading lessons:', error);
+                return;
+            }
+
+            // Update the lessons display (integrate with existing loadMyLessons function)
+            teacherLessons = lessons || [];
+            displayLessons();
+        }
+
+        // Override the original switchTab to load data from Supabase
+        const originalSwitchTab = switchTab;
+        switchTab = async function(tabName) {
+            originalSwitchTab(tabName);
+            if (tabName === 'manage') {
+                await loadMyLessonsFromDB();
+            }
+        };
+    </script>
+</body>
+</html>
