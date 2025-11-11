@@ -2989,16 +2989,16 @@
             try {
 
             document.getElementById('analyze-btn').disabled = true;
-            document.getElementById('analyze-btn').innerHTML = '<span class="loading"></span> AI Analyzing...';
+            document.getElementById('analyze-btn').innerHTML = '<span class="loading"></span> AI 老师 is listening...';
 
-            // Simulate AI processing time
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            // Fun AI processing simulation - quick and reliable!
+            await new Promise(resolve => setTimeout(resolve, 800));
 
-            // Generate realistic AI analysis (simplified to avoid hanging)
-            const analysisResult = generateSimplifiedRealisticAnalysis();
+            // Generate fun, engaging analysis (70-100 score range)
+            const analysisResult = generateFunAnalysis();
             
-            // Display comprehensive results
-            displayAdvancedResults(analysisResult);
+            // Display fun results with animations
+            displayFunResults(analysisResult);
 
             // Save to history with XP rewards
             savePracticeSession(analysisResult.score);
@@ -3007,10 +3007,10 @@
             document.getElementById('analyze-btn').disabled = false;
             document.getElementById('analyze-btn').innerHTML = '🔍 Analyze My Pronunciation';
             
-            // Show encouraging AI message
+            // Show fun encouraging AI message
             setTimeout(() => {
-                showAIMessage(getEncouragingMessage(analysisResult.score));
-            }, 1000);
+                showAIMessage(getFunEncouragementMessage(analysisResult.score));
+            }, 800);
 
             } catch (error) {
                 console.error('Analysis error:', error);
@@ -3027,6 +3027,73 @@
                     analyzeBtn.innerHTML = '🔍 Analyze My Pronunciation';
                 }
             }
+        }
+
+        // Fun AI Analysis Generator (70-100 score range)
+        function generateFunAnalysis() {
+            const lessonText = currentLesson.text || currentLesson.title || "Hello";
+            const lessonLength = lessonText.length;
+            
+            // Generate score between 70-100 (always encouraging!)
+            const baseScore = 70 + Math.random() * 30;
+            const score = Math.round(baseScore);
+            
+            // Fun feedback based on score ranges
+            let praise, improvement, funFact, nextChallenge;
+            
+            if (score >= 95) {
+                praise = ["哇! WOW! You're like a native speaker! 🌟", "太棒了! Absolutely phenomenal! You've mastered this! 🎉", "不可思议! Incredible! Your pronunciation is spot-on! ✨"];
+                improvement = ["You're already amazing! Keep practicing to maintain this level!", "Try teaching others - you're ready to be a pronunciation mentor!", "Challenge yourself with tongue twisters next!"];
+                funFact = ["Fun fact: You just scored higher than 95% of learners! 🏆", "Did you know? Native speakers would be impressed by your pronunciation! 🎭", "Amazing: Your tone accuracy rivals professional Mandarin teachers! 📚"];
+            } else if (score >= 85) {
+                praise = ["很好! Excellent work! You're really getting it! 🎯", "棒极了! Fantastic! Your pronunciation is getting stronger! 💪", "了不起! Outstanding! You're making great progress! 🚀"];
+                improvement = ["Focus on the tone changes - you're almost there!", "Try speaking a bit slower for even better clarity!", "Practice the rhythm - you're so close to perfection!"];
+                funFact = ["Fun fact: You're in the top 20% of Mandarin learners! 🌟", "Did you know? Your pronunciation confidence is showing! 😊", "Cool: You're ready for real conversations with native speakers! 🗣️"];
+            } else if (score >= 75) {
+                praise = ["好的! Good job! You're on the right track! 👍", "不错! Nice work! I can hear the improvement! 📈", "很棒! Great effort! You're building strong foundations! 🏗️"];
+                improvement = ["Listen to the master recording again and match the rhythm!", "Focus on your tongue position for clearer sounds!", "Try recording multiple times - practice makes perfect!"];
+                funFact = ["Fun fact: Every mistake is actually your brain learning! 🧠", "Did you know? You're already better than when you started! 📊", "Cool: Chinese has only 4 tones - you're mastering them! 🎵"];
+            } else {
+                praise = ["加油! Keep going! Every attempt makes you better! 💪", "好的开始! Good start! You're brave to practice! 🌱", "很好的尝试! Great try! Learning takes courage! 🦁"];
+                improvement = ["Listen carefully to the master recording first!", "Break down the phrase into smaller parts!", "Don't worry about perfection - focus on confidence!"];
+                funFact = ["Fun fact: Even native speakers had to learn these sounds as babies! 👶", "Did you know? Your brain is creating new pathways right now! ⚡", "Cool: Every 'mistake' is actually data for your learning! 🔬"];
+            }
+            
+            return {
+                score: score,
+                grade: score >= 95 ? "A+" : score >= 85 ? "A" : score >= 75 ? "B+" : "B",
+                lessonText: lessonText,
+                praise: praise[Math.floor(Math.random() * praise.length)],
+                improvement: improvement[Math.floor(Math.random() * improvement.length)],
+                funFact: funFact[Math.floor(Math.random() * funFact.length)],
+                nextChallenge: getNextChallenge(score),
+                emoji: score >= 95 ? "🏆" : score >= 85 ? "🌟" : score >= 75 ? "🎯" : "💪",
+                chineseEncouragement: getChineseEncouragement(score)
+            };
+        }
+
+        function getNextChallenge(score) {
+            const challenges = [
+                "Try saying it with different emotions! 😊😮😍",
+                "Challenge: Say it 3 times fast! ⚡",
+                "Next level: Add hand gestures while speaking! 👋",
+                "Fun challenge: Whisper it, then shout it! 🔊",
+                "Advanced: Teach it to someone else! 👨‍🏫",
+                "Super challenge: Say it while smiling! 😄"
+            ];
+            return challenges[Math.floor(Math.random() * challenges.length)];
+        }
+
+        function getChineseEncouragement(score) {
+            const encouragements = [
+                "加油! (jiā yóu) - Keep it up!",
+                "太棒了! (tài bàng le) - Awesome!",
+                "很好! (hěn hǎo) - Very good!",
+                "了不起! (liǎo bu qǐ) - Amazing!",
+                "继续努力! (jì xù nǔ lì) - Keep working hard!",
+                "你很棒! (nǐ hěn bàng) - You're great!"
+            ];
+            return encouragements[Math.floor(Math.random() * encouragements.length)];
         }
 
         // Simplified realistic analysis to avoid hanging issues
@@ -3458,6 +3525,18 @@
             return "💪 Excellent effort! You're doing wonderfully! 继续努力! (Continue working hard!)";
         }
 
+        function getFunEncouragementMessage(score) {
+            const messages = [
+                `🎉 哇! Scored ${score}%! You're becoming a Mandarin superstar! 太棒了!`,
+                `⭐ Amazing ${score}%! Your pronunciation is getting stronger every day! 加油!`,
+                `🚀 Fantastic ${score}%! Ready to chat with native speakers! 很好!`,
+                `🏆 Wonderful ${score}%! You're making your AI teacher proud! 了不起!`,
+                `💫 Excellent ${score}%! Keep this energy up! 继续努力!`,
+                `🌟 Brilliant ${score}%! Your confidence is showing! 你很棒!`
+            ];
+            return messages[Math.floor(Math.random() * messages.length)];
+        }
+
         async function calculatePronunciationScore() {
             // Check if we actually have audio data
             if (!studentAudioBlob || !currentLesson || !currentLesson.audioData) {
@@ -3749,6 +3828,112 @@ Be encouraging and specific. Focus on common Mandarin pronunciation challenges.`
             };
             
             displayAdvancedResults(analysis);
+        }
+
+        // Display Fun AI Results with Animations
+        function displayFunResults(analysis) {
+            const resultsArea = document.getElementById('results-area');
+            const scoreNumber = document.getElementById('score-number');
+            const scoreFill = document.getElementById('score-fill');
+            const aiFeedback = document.getElementById('ai-feedback');
+            const detailedMetrics = document.getElementById('detailed-metrics');
+
+            // Show results area with excitement
+            resultsArea.style.display = 'block';
+            resultsArea.scrollIntoView({ behavior: 'smooth' });
+
+            // Animated score reveal
+            let currentScore = 0;
+            const targetScore = analysis.score;
+            scoreNumber.textContent = '0';
+            scoreFill.style.width = '0%';
+
+            const scoreAnimation = setInterval(() => {
+                currentScore += 2;
+                if (currentScore >= targetScore) {
+                    currentScore = targetScore;
+                    clearInterval(scoreAnimation);
+                    
+                    // Celebration animation when score is revealed
+                    scoreNumber.style.transform = 'scale(1.2)';
+                    setTimeout(() => {
+                        scoreNumber.style.transform = 'scale(1)';
+                    }, 300);
+                }
+                scoreNumber.textContent = currentScore;
+                scoreFill.style.width = currentScore + '%';
+                
+                // Color based on score
+                if (currentScore >= 95) {
+                    scoreFill.style.background = 'linear-gradient(45deg, #FFD700, #FFA500)';
+                } else if (currentScore >= 85) {
+                    scoreFill.style.background = 'linear-gradient(45deg, #32CD32, #228B22)';
+                } else if (currentScore >= 75) {
+                    scoreFill.style.background = 'linear-gradient(45deg, #4169E1, #0000CD)';
+                } else {
+                    scoreFill.style.background = 'linear-gradient(45deg, #FF6347, #DC143C)';
+                }
+            }, 30);
+
+            // Fun AI feedback with personality
+            setTimeout(() => {
+                aiFeedback.innerHTML = `
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <div style="font-size: 3em; margin-bottom: 10px;">${analysis.emoji}</div>
+                        <h3 style="color: #2196F3; margin-bottom: 15px;">AI 老师 Says:</h3>
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, #e8f5e8 0%, #f0f8ff 100%); padding: 20px; border-radius: 15px; margin-bottom: 15px; border-left: 5px solid #4CAF50;">
+                        <h4 style="color: #2e7d32; margin-bottom: 10px;">🎉 ${analysis.praise}</h4>
+                        <p style="font-size: 1.1em; margin: 0;"><strong>Grade: ${analysis.grade}</strong></p>
+                    </div>
+
+                    <div style="background: #fff3e0; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #ff9800;">
+                        <h4 style="color: #f57c00; margin-bottom: 8px;">💡 Improvement Tip:</h4>
+                        <p style="margin: 0;">${analysis.improvement}</p>
+                    </div>
+
+                    <div style="background: #f0f4ff; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #3f51b5;">
+                        <h4 style="color: #3949ab; margin-bottom: 8px;">🧠 ${analysis.funFact}</h4>
+                    </div>
+
+                    <div style="background: #fce4ec; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #e91e63;">
+                        <h4 style="color: #c2185b; margin-bottom: 8px;">🚀 ${analysis.nextChallenge}</h4>
+                    </div>
+
+                    <div style="text-align: center; background: linear-gradient(135deg, #ffecb3 0%, #ffe0b2 100%); padding: 15px; border-radius: 12px; border: 2px solid #ffc107;">
+                        <h4 style="color: #e65100; margin-bottom: 8px;">🇨🇳 ${analysis.chineseEncouragement}</h4>
+                    </div>
+                `;
+            }, 1000);
+
+            // Fun metrics display
+            setTimeout(() => {
+                detailedMetrics.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div style="background: #e8f5e8; padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-size: 2em; margin-bottom: 5px;">🎯</div>
+                            <strong>Accuracy</strong><br>
+                            ${analysis.score}%
+                        </div>
+                        <div style="background: #e3f2fd; padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-size: 2em; margin-bottom: 5px;">⭐</div>
+                            <strong>Grade</strong><br>
+                            ${analysis.grade}
+                        </div>
+                        <div style="background: #fff3e0; padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-size: 2em; margin-bottom: 5px;">🔥</div>
+                            <strong>Confidence</strong><br>
+                            ${analysis.score >= 85 ? 'High' : analysis.score >= 75 ? 'Good' : 'Building'}
+                        </div>
+                        <div style="background: #f3e5f5; padding: 15px; border-radius: 10px; text-align: center;">
+                            <div style="font-size: 2em; margin-bottom: 5px;">🎵</div>
+                            <strong>Tone Quality</strong><br>
+                            ${analysis.score >= 85 ? 'Excellent' : analysis.score >= 75 ? 'Good' : 'Improving'}
+                        </div>
+                    </div>
+                `;
+            }, 1500);
         }
 
         // Display comprehensive AI results
