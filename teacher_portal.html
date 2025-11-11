@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mandarin Teacher Portal</title>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
     <style>
         * {
             margin: 0;
@@ -46,24 +46,7 @@
             opacity: 0.9;
         }
 
-        .student-view-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            padding: 10px 20px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-radius: 25px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
 
-        .student-view-btn:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-2px);
-        }
 
         .nav-tabs {
             display: flex;
@@ -93,6 +76,74 @@
 
         .content {
             padding: 30px;
+        }
+
+        /* Class Selection Bar */
+        .class-selection-bar {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 2px solid #dee2e6;
+        }
+
+        .class-info h3 {
+            margin: 0 0 10px 0;
+            color: #495057;
+            font-size: 1.1em;
+        }
+
+        .class-info select {
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 2px solid #ced4da;
+            font-size: 1em;
+            min-width: 200px;
+            background: white;
+        }
+
+        .class-info select:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .selected-class-display {
+            text-align: right;
+        }
+
+        .class-badge {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .lesson-count {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .class-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .class-warning p {
+            margin: 0;
+            color: #856404;
+            font-weight: 500;
         }
 
         .tab-content {
@@ -138,15 +189,73 @@
             background: #f8fff8;
         }
 
+        .upload-zone.enhanced {
+            border: 3px dashed #2196F3;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f8fff8 100%);
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.1);
+            position: relative;
+            overflow: hidden;
+            max-width: 500px;
+            margin: 0 auto 20px auto;
+        }
+
+        .upload-zone.enhanced::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #2196F3, #4CAF50, #FF9800, #2196F3);
+            border-radius: 17px;
+            z-index: -1;
+            animation: borderGradient 3s ease-in-out infinite;
+        }
+
+        @keyframes borderGradient {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes pulse {
+            0% { 
+                transform: scale(1);
+                box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            }
+            50% { 
+                transform: scale(1.05);
+                box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
+            }
+            100% { 
+                transform: scale(1);
+                box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            }
+        }
+
         .upload-zone:hover {
             border-color: #45a049;
             background: #f0fff0;
+        }
+
+        .upload-zone.enhanced:hover {
+            border-color: #1976D2;
+            background: linear-gradient(135deg, #bbdefb 0%, #f0fff0 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(33, 150, 243, 0.2);
         }
 
         .upload-zone.dragover {
             border-color: #2e7d32;
             background: #e8f5e8;
             transform: scale(1.02);
+        }
+
+        .upload-zone.enhanced.dragover {
+            border-color: #1565C0;
+            background: linear-gradient(135deg, #90caf9 0%, #e8f5e8 100%);
+            transform: scale(1.03) translateY(-5px);
+            box-shadow: 0 12px 35px rgba(33, 150, 243, 0.3);
         }
 
         .upload-icon {
@@ -165,6 +274,18 @@
             color: #666;
             font-size: 0.9em;
         }
+
+        .upload-hint {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(33, 150, 243, 0.1);
+            border-radius: 8px;
+            color: #1976D2;
+            font-size: 0.85em;
+            border-left: 4px solid #2196F3;
+        }
+
+
 
         .file-input {
             display: none;
@@ -334,108 +455,7 @@
 
 
         /* Authentication Modal Styles */
-        .auth-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-        }
 
-        .auth-modal.show {
-            display: flex;
-        }
-
-        .auth-content {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-        }
-
-        .auth-tabs {
-            display: flex;
-            margin-bottom: 30px;
-            border-radius: 25px;
-            background: #f0f0f0;
-            overflow: hidden;
-        }
-
-        .auth-tab {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .auth-tab.active {
-            background: #4CAF50;
-            color: white;
-        }
-
-        .auth-form {
-            display: none;
-        }
-
-        .auth-form.active {
-            display: block;
-        }
-
-        .auth-input {
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        .auth-input:focus {
-            outline: none;
-            border-color: #4CAF50;
-        }
-
-        .auth-btn {
-            width: 100%;
-            padding: 15px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .auth-btn:hover {
-            background: #45a049;
-        }
-
-        .auth-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .pending-approval {
-            background: linear-gradient(135deg, #FF6B35, #F7931E);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-            margin: 20px 0;
-        }
 
         .stat-card p {
             opacity: 0.9;
@@ -552,45 +572,10 @@
 </head>
 <body>
     <!-- Authentication Modal -->
-    <div class="auth-modal" id="auth-modal">
-        <div class="auth-content">
-            <h2>🎓 Teacher Access</h2>
-            <p style="color: #666; margin-bottom: 20px;">Join the BINUS Mandarin Teaching Community</p>
-            
-            <div class="auth-tabs">
-                <button class="auth-tab active" onclick="switchAuthTab('login')">登录 Login</button>
-                <button class="auth-tab" onclick="switchAuthTab('signup')">注册 Sign Up</button>
-            </div>
 
-            <form class="auth-form active" id="login-form">
-                <input type="email" class="auth-input" id="login-email" placeholder="📧 Email address" required>
-                <input type="password" class="auth-input" id="login-password" placeholder="🔒 Password" required>
-                <button type="submit" class="auth-btn">🚀 Login & Start Teaching</button>
-            </form>
-
-            <form class="auth-form" id="signup-form">
-                <input type="text" class="auth-input" id="signup-name" placeholder="👨‍🏫 Full Name" required>
-                <input type="email" class="auth-input" id="signup-email" placeholder="📧 Email address" required>
-                <input type="password" class="auth-input" id="signup-password" placeholder="🔒 Create Password (6+ chars)" minlength="6" required>
-                <button type="submit" class="auth-btn">📝 Request Teacher Access</button>
-                <p style="font-size: 0.85em; color: #666; margin-top: 10px;">
-                    * Account requires admin approval
-                </p>
-            </form>
-
-            <div id="pending-message" class="pending-approval" style="display: none;">
-                <h3>⏳ Pending Approval</h3>
-                <p>Your teacher account is waiting for admin approval. You'll receive an email when approved!</p>
-                <button class="btn" onclick="auth.signOut()" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 10px 20px; border-radius: 20px; margin-top: 15px;">
-                    🔄 Try Different Account
-                </button>
-            </div>
-        </div>
-    </div>
 
     <div class="container" id="main-container">
         <div class="header">
-            <a href="mandarin_pronunciation_tool.html" class="student-view-btn">👨‍🎓 Student View</a>
             <h1>👨‍🏫 Mandarin Teacher Portal</h1>
             <p>Create, manage, and share pronunciation lessons with your students</p>
         </div>
@@ -603,10 +588,42 @@
         </div>
 
         <div class="content">
+            <!-- Class Selection -->
+            <div class="class-selection-bar">
+                <div class="class-info">
+                    <h3>📚 Teaching Class:</h3>
+                    <select id="teacher-class-select" onchange="changeTeacherClass()">
+                        <option value="">Select a Class</option>
+                        <option value="Grade1A">Grade 1A</option>
+                        <option value="Grade1B">Grade 1B</option>
+                        <option value="Grade2A">Grade 2A</option>
+                        <option value="Grade2B">Grade 2B</option>
+                        <option value="Grade3A">Grade 3A</option>
+                        <option value="Grade3B">Grade 3B</option>
+                        <option value="Grade3C">Grade 3C</option>
+                        <option value="Grade4A">Grade 4A</option>
+                        <option value="Grade4B">Grade 4B</option>
+                        <option value="Grade4C">Grade 4C</option>
+                        <option value="Grade5A">Grade 5A</option>
+                        <option value="Grade5B">Grade 5B</option>
+                    </select>
+                </div>
+                <div class="selected-class-display" id="selected-class-display" style="display: none;">
+                    <span class="class-badge" id="current-class-badge">No Class Selected</span>
+                    <span class="lesson-count" id="class-lesson-count">0 lessons created</span>
+                </div>
+            </div>
+
             <!-- Create Lessons Tab -->
             <div id="create-tab" class="tab-content active">
                 <div class="card">
                     <h2>📝 Create New Lesson</h2>
+                    
+                    <div class="class-warning" id="class-warning" style="display: none;">
+                        <p>⚠️ Please select a class above to create lessons for your students!</p>
+                    </div>
+                    
+                    <div class="lesson-form" id="lesson-form" style="display: block;">
                     
                     <div class="input-group">
                         <label>Lesson Title</label>
@@ -641,21 +658,40 @@
                     </div>
 
                     <div class="input-group">
+                        <label>Student Instructions</label>
+                        <textarea id="student-instructions" rows="3" placeholder="Instructions for students - e.g., 'Listen to the pronunciation and repeat 3 times. Focus on the tone changes.'"></textarea>
+                    </div>
+
+                    <div class="input-group">
                         <label>Teaching Notes (Optional)</label>
                         <textarea id="lesson-notes" rows="3" placeholder="Add pronunciation tips, cultural context, or teaching notes for students"></textarea>
                     </div>
                 </div>
 
                 <div class="card">
-                    <h2>🎤 Audio Recording & Upload</h2>
+                    <h2>� Quick Audio Upload</h2>
+                    <p style="color: #666; margin-bottom: 20px;">📁 Upload audio files instantly - much faster than recording!</p>
                     
-                    <div class="upload-zone" id="audio-upload-zone" onclick="document.getElementById('audio-file-input').click()">
-                        <div class="upload-icon">🎵</div>
-                        <div class="upload-text">Upload Audio File or Record</div>
-                        <div class="upload-subtext">Drag & drop audio files here or click to browse<br>Supported: MP3, WAV, M4A, OGG</div>
+                    <div class="upload-zone enhanced" id="audio-upload-zone" onclick="document.getElementById('audio-file-input').click()">
+                        <div class="upload-icon">📁</div>
+                        <div class="upload-text">Click to Upload Audio File</div>
+                        <div class="upload-subtext">
+                            <strong>Drag & drop files here or click to browse</strong><br>
+                            ✅ Supported: MP3, WAV, M4A, OGG (Max 10MB)<br>
+                            ⚡ Much faster than recording!
+                        </div>
+                        <div class="upload-hint">
+                            💡 <strong>Tip:</strong> You can drag multiple files at once!
+                        </div>
                     </div>
                     
                     <input type="file" id="audio-file-input" class="file-input" accept="audio/*" multiple>
+                    
+                    <div style="text-align: center; margin: 20px 0;">
+                        <button class="btn btn-primary" onclick="document.getElementById('audio-file-input').click()" style="font-size: 1.1em; padding: 15px 30px;">
+                            📁 Quick File Select
+                        </button>
+                    </div>
                     
                     <div class="upload-progress" id="upload-progress">
                         <div class="progress-bar">
@@ -664,18 +700,20 @@
                         <div class="progress-text" id="progress-text">Uploading... 0%</div>
                     </div>
 
-                    <div style="text-align: center; margin: 20px 0;">
-                        <strong>OR</strong>
-                    </div>
-
-                    <div style="text-align: center;">
-                        <button class="btn btn-primary" id="record-btn" onclick="toggleRecording()">
-                            🎤 Start Recording
-                        </button>
-                        <button class="btn btn-secondary" id="stop-btn" onclick="stopRecording()" disabled>
-                            ⏹️ Stop Recording
-                        </button>
-                    </div>
+                    <details style="margin-top: 30px;">
+                        <summary style="cursor: pointer; padding: 10px; background: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
+                            <strong>📱 Alternative: Record Audio (Slower)</strong>
+                        </summary>
+                        <div style="text-align: center; padding: 20px; background: #fff3cd; border-radius: 8px; margin-top: 10px;">
+                            <p style="color: #856404; margin-bottom: 15px;">💡 <strong>Note:</strong> File upload is much faster than recording!</p>
+                            <button class="btn btn-primary" id="record-btn" onclick="toggleRecording()">
+                                🎤 Start Recording
+                            </button>
+                            <button class="btn btn-secondary" id="stop-btn" onclick="stopRecording()" disabled>
+                                ⏹️ Stop Recording
+                            </button>
+                        </div>
+                    </details>
 
                     <div id="audio-preview"></div>
                 </div>
@@ -692,6 +730,8 @@
                     <button class="btn btn-primary" onclick="saveLesson()" id="save-lesson-btn">
                         💾 Save & Publish Lesson
                     </button>
+                    
+                    </div> <!-- End lesson-form -->
                 </div>
             </div>
 
@@ -725,6 +765,9 @@
                             <option value="sentences">Sentences</option>
                             <option value="conversation">Conversation</option>
                         </select>
+                        <button class="btn btn-secondary" onclick="createMoreSamples()" style="margin-left: 10px;">
+                            🧪 Add More Samples
+                        </button>
                     </div>
                     <div class="lesson-grid" id="my-lessons-grid">
                         <!-- Lessons will be populated here -->
@@ -814,11 +857,131 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             initializeDragAndDrop();
-            loadMyLessons();
+            createSampleLessons();
+            loadMyLessons();  
             loadSharedLibrary();
             updateStats();
             loadAnalytics();
         });
+
+        // Create sample lessons for testing
+        function createSampleLessons() {
+            const existingLessons = JSON.parse(localStorage.getItem('teacherLessons') || '[]');
+            
+            // Only create samples if no lessons exist
+            if (existingLessons.length === 0) {
+                const sampleLessons = [
+                    {
+                        id: Date.now() + 1,
+                        title: 'Morning Greetings',
+                        text: '早上好 (Zǎo shàng hǎo)',
+                        category: 'greetings',
+                        difficulty: 'beginner',
+                        notes: 'Say "Good morning" in Mandarin',
+                        teacherClass: 'Grade 5A',
+                        teacherName: 'Teacher',
+                        createdAt: new Date().toISOString(),
+                        isPublic: false,
+                        usageCount: 0,
+                        rating: 0,
+                        reviews: []
+                    },
+                    {
+                        id: Date.now() + 2,
+                        title: 'Basic Numbers',
+                        text: '一、二、三、四、五 (Yī, èr, sān, sì, wǔ)',
+                        category: 'numbers',
+                        difficulty: 'beginner', 
+                        notes: 'Numbers 1-5 practice',
+                        teacherClass: 'Grade 5A',
+                        teacherName: 'Teacher',
+                        createdAt: new Date().toISOString(),
+                        isPublic: false,
+                        usageCount: 0,
+                        rating: 0,
+                        reviews: []
+                    },
+                    {
+                        id: Date.now() + 3,
+                        title: 'School Supplies',
+                        text: '书、笔、纸 (Shū, bǐ, zhǐ)',
+                        category: 'vocabulary',
+                        difficulty: 'intermediate',
+                        notes: 'Book, pen, paper - essential school words',
+                        teacherClass: 'Grade 5B',
+                        teacherName: 'Teacher',
+                        createdAt: new Date().toISOString(),
+                        isPublic: false,
+                        usageCount: 0,
+                        rating: 0,
+                        reviews: []
+                    }
+                ];
+                
+                localStorage.setItem('teacherLessons', JSON.stringify(sampleLessons));
+                showNotification('📚 Sample lessons created for testing!', 'info');
+            }
+        }
+
+        // Create additional sample lessons for testing
+        function createMoreSamples() {
+            const existingLessons = JSON.parse(localStorage.getItem('teacherLessons') || '[]');
+            
+            const moreSamples = [
+                {
+                    id: Date.now() + 10,
+                    title: 'Weather Talk',
+                    text: '今天天气很好 (Jīn tiān tiān qì hěn hǎo)',
+                    category: 'conversation',
+                    difficulty: 'intermediate',
+                    notes: 'Discussing today\'s good weather',
+                    teacherClass: 'Grade 6A',
+                    teacherName: 'Teacher',
+                    createdAt: new Date().toISOString(),
+                    isPublic: false,
+                    usageCount: 0,
+                    rating: 0,
+                    reviews: []
+                },
+                {
+                    id: Date.now() + 11,
+                    title: 'Food Ordering',
+                    text: '我要一杯水 (Wǒ yào yī bēi shuǐ)',
+                    category: 'conversation',
+                    difficulty: 'intermediate',
+                    notes: 'Ordering a glass of water',
+                    teacherClass: 'Grade 6B',
+                    teacherName: 'Teacher',
+                    createdAt: new Date().toISOString(),
+                    isPublic: false,
+                    usageCount: 0,
+                    rating: 0,
+                    reviews: []
+                },
+                {
+                    id: Date.now() + 12,
+                    title: 'Time Expression',
+                    text: '现在几点？(Xiàn zài jǐ diǎn?)',
+                    category: 'time',
+                    difficulty: 'beginner',
+                    notes: 'Asking what time it is',
+                    teacherClass: 'Grade 5C',
+                    teacherName: 'Teacher',
+                    createdAt: new Date().toISOString(),
+                    isPublic: false,
+                    usageCount: 0,
+                    rating: 0,
+                    reviews: []
+                }
+            ];
+            
+            const updatedLessons = [...existingLessons, ...moreSamples];
+            localStorage.setItem('teacherLessons', JSON.stringify(updatedLessons));
+            
+            showNotification(`✨ Added ${moreSamples.length} more sample lessons for different classes!`, 'success');
+            loadMyLessons();
+            updateStats();
+        }
 
         // Tab switching
         function switchTab(tabName) {
@@ -850,35 +1013,87 @@
                 e.preventDefault();
                 uploadZone.classList.remove('dragover');
                 const files = e.dataTransfer.files;
+                console.log('Files dropped:', files);
                 handleFileUpload(files);
             });
 
             fileInput.addEventListener('change', (e) => {
+                console.log('File input changed, files:', e.target.files);
                 handleFileUpload(e.target.files);
             });
         }
 
         // Handle file upload
         function handleFileUpload(files) {
-            if (files.length === 0) return;
+            console.log('handleFileUpload called with', files.length, 'files');
+            if (files.length === 0) {
+                console.log('No files to upload');
+                return;
+            }
 
             const file = files[0];
+            console.log('File details:', file.name, file.type, file.size);
             
             // Validate file type
             if (!file.type.startsWith('audio/')) {
+                console.log('Invalid file type:', file.type);
                 showNotification('Please select an audio file (MP3, WAV, M4A, OGG)', 'error');
                 return;
             }
 
             // Validate file size (max 10MB)
             if (file.size > 10 * 1024 * 1024) {
+                console.log('File too large:', file.size);
                 showNotification('File size must be less than 10MB', 'error');
                 return;
             }
 
-            // Simulate upload progress
-            simulateUpload(file);
+            // Show immediate feedback
+            console.log('File validation passed, processing...');
+            showNotification('Processing audio file...', 'info');
+            
+            // Process file immediately (much faster than simulated upload)
+            processAudioFile(file);
         }
+        
+        // Process audio file immediately
+        function processAudioFile(file) {
+            // Convert file to blob URL for preview
+            const audioUrl = URL.createObjectURL(file);
+            currentAudioBlob = file;
+            
+            // Debug logging
+            console.log('Audio file processed:', file.name, 'currentAudioBlob set:', !!currentAudioBlob);
+            
+            // Show success immediately
+            document.getElementById('audio-preview').innerHTML = `
+                <div style="margin-top: 20px; padding: 20px; background: linear-gradient(135deg, #f0fff0 0%, #e8f5e8 100%); border-radius: 12px; border-left: 5px solid #4CAF50;">
+                    <h4 style="color: #2e7d32; margin: 0 0 10px 0;">✅ Audio File Ready!</h4>
+                    <div style="display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; margin-bottom: 15px;">
+                        <span><strong>📁 File:</strong></span>
+                        <span>${file.name}</span>
+                        <span><strong>📊 Size:</strong></span>
+                        <span>${(file.size / 1024 / 1024).toFixed(2)} MB</span>
+                        <span><strong>🔊 Type:</strong></span>
+                        <span>${file.type}</span>
+                    </div>
+                    <audio controls class="audio-player" src="${audioUrl}" style="width: 100%; margin-top: 10px;"></audio>
+                    <p style="color: #2e7d32; margin: 10px 0 0 0; font-size: 0.9em;">🚀 Your lesson is ready to save!</p>
+                </div>
+            `;
+            
+            // Hide progress and show success
+            document.getElementById('upload-progress').style.display = 'none';
+            showNotification('Audio file processed successfully! 🎉', 'success');
+            
+            // Auto-focus on save button
+            setTimeout(() => {
+                document.getElementById('save-lesson-btn').style.animation = 'pulse 2s infinite';
+                document.getElementById('save-lesson-btn').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 500);
+        }
+
+
 
         // Simulate file upload with progress
         function simulateUpload(file) {
@@ -980,17 +1195,48 @@
 
         // Save lesson
         function saveLesson() {
-            const title = document.getElementById('lesson-title').value;
+            if (!currentClass) {
+                showNotification('Please select a class first!', 'error');
+                return;
+            }
+
+            const title = document.getElementById('lesson-title').value.trim();
             const category = document.getElementById('lesson-category').value;
             const difficulty = document.getElementById('lesson-difficulty').value;
-            const text = document.getElementById('lesson-text').value;
+            const text = document.getElementById('lesson-text').value.trim();
+            const studentInstructions = document.getElementById('student-instructions').value.trim();
             const notes = document.getElementById('lesson-notes').value;
             const sharePublicly = document.getElementById('share-publicly').checked;
 
-            if (!title || !text || !currentAudioBlob) {
-                showNotification('Please fill all required fields and add audio', 'error');
+            // Debug logging
+            console.log('Validation check:', { title, text, studentInstructions, currentAudioBlob, currentClass });
+
+            // Detailed validation with specific error messages
+            if (!title) {
+                showNotification('Please enter a lesson title!', 'error');
+                document.getElementById('lesson-title').focus();
                 return;
             }
+
+            if (!text) {
+                showNotification('Please enter the lesson text to practice!', 'error');
+                document.getElementById('lesson-text').focus();
+                return;
+            }
+
+            if (!studentInstructions) {
+                showNotification('Please enter instructions for students!', 'error');
+                document.getElementById('student-instructions').focus();
+                return;
+            }
+
+            if (!currentAudioBlob) {
+                showNotification('Please upload an audio file or record audio!', 'error');
+                return;
+            }
+
+            // All validation passed
+            showNotification('Saving lesson...', 'info');
 
             // Convert audio blob to base64 for storage
             const reader = new FileReader();
@@ -1003,10 +1249,12 @@
                     category,
                     difficulty,
                     text,
+                    studentInstructions,
                     notes,
                     audioData,
                     isPublic: sharePublicly,
-                    teacherName: 'Teacher Name', // In real app, get from auth
+                    teacherClass: currentClass, // Include the selected class
+                    teacherName: 'Teacher', // Simple teacher name
                     createdAt: new Date().toISOString(),
                     usageCount: 0,
                     rating: 0,
@@ -1023,13 +1271,16 @@
 
                 // Reset form
                 document.getElementById('lesson-title').value = '';
+                document.getElementById('lesson-category').value = 'vowels';
+                document.getElementById('lesson-difficulty').value = 'beginner';
                 document.getElementById('lesson-text').value = '';
+                document.getElementById('student-instructions').value = '';
                 document.getElementById('lesson-notes').value = '';
                 document.getElementById('audio-preview').innerHTML = '';
                 document.getElementById('share-publicly').checked = false;
                 currentAudioBlob = null;
 
-                showNotification('Lesson saved successfully!', 'success');
+                showNotification(`Lesson saved for ${currentClass}!`, 'success');
                 loadMyLessons();
                 loadSharedLibrary();
                 updateStats();
@@ -1053,6 +1304,7 @@
                         <div class="lesson-info">
                             <h3>${lesson.title}</h3>
                             <p>Created ${new Date(lesson.createdAt).toLocaleDateString()}</p>
+                            ${lesson.teacherClass ? `<p style="color: #4CAF50; font-weight: bold;">📚 ${lesson.teacherClass}</p>` : ''}
                         </div>
                         <div>
                             <span class="lesson-type">${lesson.category}</span>
@@ -1204,176 +1456,99 @@
 
     </script>
     
-    <!-- Include Supabase Configuration -->
-    <script src="supabase-config.js"></script>
-    
     <script>
-        // Authentication and Supabase Integration
-        let currentTeacher = null;
+        // Class Management System
+        let currentClass = null;
         
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', async () => {
-            await checkAuthState();
-            setupAuthForms();
+        // Initialize class management
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Teacher portal loaded, checking for saved class...');
+            // Check if there's a saved class selection
+            const savedClass = localStorage.getItem('selectedTeacherClass');
+            console.log('Saved class:', savedClass);
+            if (savedClass) {
+                currentClass = savedClass;
+                document.getElementById('teacher-class-select').value = savedClass;
+                updateClassDisplay();
+                showLessonForm();
+                console.log('Forms should now be visible');
+            } else {
+                console.log('No saved class, forms will be hidden until class is selected');
+            }
         });
 
-        async function checkAuthState() {
-            const { user, error } = await auth.getCurrentUser();
+        // Class selection function
+        function changeTeacherClass() {
+            console.log('Class selection changed');
+            const classSelect = document.getElementById('teacher-class-select');
+            const selectedClass = classSelect.value;
+            console.log('Selected class:', selectedClass);
             
-            if (user && user.email) {
-                // Check if teacher is approved
-                const { data: teacher, error: teacherError } = await db.getTeacher(user.email);
-                
-                if (teacher) {
-                    currentTeacher = teacher;
-                    hideAuthModal();
-                    showNotification(`欢迎回来! Welcome back, ${teacher.name}! 🎉`, 'success');
-                } else {
-                    // Show pending approval message
-                    showPendingApproval();
-                }
+            if (selectedClass) {
+                currentClass = selectedClass;
+                localStorage.setItem('selectedTeacherClass', selectedClass);
+                updateClassDisplay();
+                showLessonForm();
+                console.log('Forms should now be visible');
+                showNotification(`Class selected: ${selectedClass} 📚`, 'success');
             } else {
-                showAuthModal();
+                currentClass = null;
+                localStorage.removeItem('selectedTeacherClass');
+                updateClassDisplay();
+                hideLessonForm();
+                console.log('Forms hidden - no class selected');
             }
         }
 
-        function setupAuthForms() {
-            document.getElementById('login-form').addEventListener('submit', handleLogin);
-            document.getElementById('signup-form').addEventListener('submit', handleSignup);
-        }
-
-        async function handleLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-
-            const loginBtn = e.target.querySelector('.auth-btn');
-            loginBtn.disabled = true;
-            loginBtn.textContent = '登录中... Logging in...';
-
-            const { data, error } = await auth.signIn(email, password);
+        // Update class display
+        function updateClassDisplay() {
+            const classInfo = document.getElementById('current-class-info');
+            const classBadge = document.getElementById('class-badge');
             
-            if (error) {
-                showNotification(`登录失败! Login failed: ${error.message}`, 'error');
-                loginBtn.disabled = false;
-                loginBtn.textContent = '🚀 Login & Start Teaching';
-                return;
-            }
-
-            // Check teacher approval status
-            const { data: teacher, error: teacherError } = await db.getTeacher(email);
-            
-            if (teacher) {
-                currentTeacher = teacher;
-                hideAuthModal();
-                showNotification(`成功! Successfully logged in! 🎉`, 'success');
-                await loadTeacherData();
+            if (currentClass) {
+                classInfo.style.display = 'block';
+                classBadge.textContent = currentClass;
             } else {
-                showPendingApproval();
+                classInfo.style.display = 'none';
             }
-            
-            loginBtn.disabled = false;
-            loginBtn.textContent = '🚀 Login & Start Teaching';
         }
 
-        async function handleSignup(e) {
-            e.preventDefault();
-            const name = document.getElementById('signup-name').value;
-            const email = document.getElementById('signup-email').value;
-            const password = document.getElementById('signup-password').value;
-
-            const signupBtn = e.target.querySelector('.auth-btn');
-            signupBtn.disabled = true;
-            signupBtn.textContent = '注册中... Registering...';
-
-            // Create auth user
-            const { data: authData, error: authError } = await auth.signUp(email, password, name);
+        // Show/hide lesson form based on class selection
+        function showLessonForm() {
+            console.log('showLessonForm called');
+            const lessonForm = document.getElementById('lesson-form');
+            const classWarning = document.getElementById('class-warning');
             
-            if (authError) {
-                showNotification(`注册失败! Signup failed: ${authError.message}`, 'error');
-                signupBtn.disabled = false;
-                signupBtn.textContent = '📝 Request Teacher Access';
-                return;
-            }
-
-            // Create teacher record
-            const { data: teacher, error: teacherError } = await db.createTeacher(email, name);
-            
-            if (teacherError) {
-                showNotification(`创建教师记录失败! Failed to create teacher record: ${teacherError.message}`, 'error');
+            if (lessonForm) {
+                lessonForm.style.display = 'block';
+                console.log('Lesson form set to display: block');
             } else {
-                // Check if auto-approved (BINUS email)
-                if (email.toLowerCase().endsWith('@binus.edu')) {
-                    showNotification(`🎉 欢迎BINUS老师! Welcome BINUS Faculty! 您已自动获得批准 You are automatically approved! 🏫`, 'success');
-                    // Refresh to show teacher portal
-                    setTimeout(() => location.reload(), 2000);
-                } else {
-                    showNotification(`申请已提交! Registration successful! 请等待管理员批准 Please wait for admin approval! 📧`, 'success');
-                    showPendingApproval();
-                }
+                console.error('lesson-form element not found!');
             }
             
-            signupBtn.disabled = false;
-            signupBtn.textContent = '📝 Request Teacher Access';
-        }
-
-        function switchAuthTab(tab) {
-            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-            
-            document.querySelector(`[onclick="switchAuthTab('${tab}')"]`).classList.add('active');
-            document.getElementById(`${tab}-form`).classList.add('active');
-        }
-
-        function showAuthModal() {
-            document.getElementById('auth-modal').classList.add('show');
-            document.getElementById('main-container').style.filter = 'blur(5px)';
-        }
-
-        function hideAuthModal() {
-            document.getElementById('auth-modal').classList.remove('show');
-            document.getElementById('main-container').style.filter = 'none';
-        }
-
-        function showPendingApproval() {
-            document.getElementById('pending-message').style.display = 'block';
-            document.querySelectorAll('.auth-form').forEach(f => f.style.display = 'none');
-            document.querySelector('.auth-tabs').style.display = 'none';
-        }
-
-        async function loadTeacherData() {
-            if (!currentTeacher) return;
-            
-            // Load teacher's lessons from Supabase
-            await loadMyLessonsFromDB();
-            updateStats();
-        }
-
-
-
-        async function loadMyLessonsFromDB() {
-            if (!currentTeacher) return;
-            
-            const { data: lessons, error } = await db.getLessonsByTeacher(currentTeacher.id);
-            
-            if (error) {
-                console.error('Error loading lessons:', error);
-                return;
+            if (classWarning) {
+                classWarning.style.display = 'none';
+                console.log('Class warning hidden');
+            } else {
+                console.error('class-warning element not found!');
             }
-
-            // Update the lessons display (integrate with existing loadMyLessons function)
-            teacherLessons = lessons || [];
-            displayLessons();
         }
 
-        // Override the original switchTab to load data from Supabase
-        const originalSwitchTab = switchTab;
-        switchTab = async function(tabName) {
-            originalSwitchTab(tabName);
-            if (tabName === 'manage') {
-                await loadMyLessonsFromDB();
+        function hideLessonForm() {
+            console.log('hideLessonForm called');
+            const lessonForm = document.getElementById('lesson-form');
+            const classWarning = document.getElementById('class-warning');
+            
+            if (lessonForm) {
+                lessonForm.style.display = 'none';
+                console.log('Lesson form hidden');
             }
-        };
+            
+            if (classWarning) {
+                classWarning.style.display = 'block';
+                console.log('Class warning shown');
+            }
+        }
     </script>
 </body>
 </html>

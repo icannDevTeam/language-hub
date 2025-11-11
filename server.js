@@ -363,7 +363,7 @@ Start with simpler exercises. Practice each tone separately, then combine. Liste
 }
 
 // Start server
-app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`
 ╔═══════════════════════════════════════════════════════════╗
 ║                                                           ║
@@ -378,4 +378,14 @@ app.listen(PORT, () => {
 ║                                                           ║
 ╚═══════════════════════════════════════════════════════════╝
     `);
+});
+
+// Handle server errors
+server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+        console.log(`Port ${PORT} is already in use. Trying to find an available port...`);
+        server.listen(0, '0.0.0.0');
+    } else {
+        console.error('Server error:', err);
+    }
 });
