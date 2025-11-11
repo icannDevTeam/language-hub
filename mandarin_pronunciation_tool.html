@@ -1451,8 +1451,16 @@
             showPersonalizedWelcome();
             initializeSpeech();
             updatePersonalizedHeader();
-            // Check if user has teacher access
-            checkTeacherAccess();
+            
+            // Check if user has teacher access (with slight delay to ensure Supabase is ready)
+            setTimeout(() => {
+                checkTeacherAccess();
+            }, 1000);
+            
+            // Also check again after 3 seconds in case of slow connection
+            setTimeout(() => {
+                checkTeacherAccess();
+            }, 3000);
         }
 
         function startLearning() {
@@ -1512,25 +1520,40 @@
         // Teacher Portal Functions
         async function checkTeacherAccess() {
             try {
+                // Check if Supabase is available
+                if (typeof auth === 'undefined' || typeof db === 'undefined') {
+                    console.log('Supabase not yet loaded, skipping teacher check');
+                    return false;
+                }
+
                 // Check if user is authenticated as teacher
                 const { user, error } = await auth.getCurrentUser();
                 
                 if (user && !error) {
+                    console.log('User authenticated:', user.email);
                     // Check if user is an approved teacher
                     const { data: teacher, error: teacherError } = await db.getTeacher(user.email);
                     
                     if (teacher && !teacherError) {
+                        console.log('Teacher access confirmed for:', user.email);
                         // Show teacher portal button
                         document.getElementById('teacher-portal-btn').style.display = 'block';
                         return true;
+                    } else {
+                        console.log('User not approved as teacher or error:', teacherError);
                     }
+                } else {
+                    console.log('No authenticated user found');
                 }
             } catch (error) {
                 console.log('Teacher access check failed:', error);
             }
             
             // Hide teacher portal button if not authenticated teacher
-            document.getElementById('teacher-portal-btn').style.display = 'none';
+            const teacherBtn = document.getElementById('teacher-portal-btn');
+            if (teacherBtn) {
+                teacherBtn.style.display = 'none';
+            }
             return false;
         }
 
@@ -1538,6 +1561,46 @@
             // Redirect to teacher portal
             window.location.href = 'teacher_portal.html';
         }
+
+        // Debug function to manually show teacher button (temporary)
+        function showTeacherButtonDebug() {
+            const teacherBtn = document.getElementById('teacher-portal-btn');
+            if (teacherBtn) {
+                teacherBtn.style.display = 'block';
+                console.log('Teacher button manually shown');
+            } else {
+                console.log('Teacher button element not found');
+            }
+        }
+
+        // Debug function to check authentication status
+        async function debugAuthStatus() {
+            console.log('=== Authentication Debug ===');
+            console.log('Auth object available:', typeof auth !== 'undefined');
+            console.log('DB object available:', typeof db !== 'undefined');
+            
+            if (typeof auth !== 'undefined') {
+                try {
+                    const { user, error } = await auth.getCurrentUser();
+                    console.log('Current user:', user);
+                    console.log('Auth error:', error);
+                    
+                    if (user && typeof db !== 'undefined') {
+                        const { data: teacher, error: teacherError } = await db.getTeacher(user.email);
+                        console.log('Teacher data:', teacher);
+                        console.log('Teacher error:', teacherError);
+                    }
+                } catch (e) {
+                    console.log('Auth check error:', e);
+                }
+            }
+            console.log('=== End Debug ===');
+        }
+
+        // Make debug functions available globally
+        window.showTeacherButtonDebug = showTeacherButtonDebug;
+        window.debugAuthStatus = debugAuthStatus;
+        window.checkTeacherAccess = checkTeacherAccess;
 
         function showPersonalizedWelcome() {
             const welcomeMessages = [
