@@ -1,0 +1,39 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/student",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/teacher",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/teachers",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/teacher-portal",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/server.js"
+    }
+  ]
+}
