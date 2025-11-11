@@ -57,17 +57,30 @@ function writeHistory(history) {
 
 // Root route - redirect to student interface by default
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'mandarin_pronunciation_tool.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Teacher interface
+// Teacher interface (multiple routes for convenience)
 app.get('/teacher', (req, res) => {
+    res.sendFile(path.join(__dirname, 'teacher_portal.html'));
+});
+
+app.get('/teachers', (req, res) => {
+    res.sendFile(path.join(__dirname, 'teacher_portal.html'));
+});
+
+app.get('/teacher-portal', (req, res) => {
     res.sendFile(path.join(__dirname, 'teacher_portal.html'));
 });
 
 // Student interface
 app.get('/student', (req, res) => {
-    res.sendFile(path.join(__dirname, 'mandarin_pronunciation_tool.html'));
+    res.sendFile(path.join(__dirname, 'student.html'));
+});
+
+// Legacy student route (redirect to new structure)
+app.get('/mandarin-tool', (req, res) => {
+    res.sendFile(path.join(__dirname, 'student.html'));
 });
 
 // ===== API ENDPOINTS =====

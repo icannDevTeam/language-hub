@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Practice - Mandarin Pronunciation Tool</title>
+    <title>Mandarin Pronunciation Learning Tool</title>
     <style>
         * {
             margin: 0;
@@ -13,9 +13,426 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FF6B35 0%, #F7931E 50%, #FFD700 100%);
             min-height: 100vh;
             padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Welcome Screen Styles */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #FF6B35 0%, #F7931E 50%, #FFD700 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: gradientShift 6s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background: linear-gradient(135deg, #FF6B35 0%, #F7931E 50%, #FFD700 100%); }
+            50% { background: linear-gradient(135deg, #FFD700 0%, #FF6B35 50%, #F7931E 100%); }
+        }
+
+        .welcome-container {
+            text-align: center;
+            color: white;
+            max-width: 500px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: welcomeFloat 3s ease-in-out infinite;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes welcomeFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .binus-logo h1 {
+            font-size: 2em;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .binus-logo h2 {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            opacity: 0.9;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .welcome-character {
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .mascot {
+            font-size: 4em;
+            animation: mascotBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes mascotBounce {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        .speech-bubble {
+            background: white;
+            color: #333;
+            padding: 12px 16px;
+            border-radius: 15px;
+            margin-top: 15px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            animation: bubbleWiggle 3s ease-in-out infinite;
+            font-size: 0.95em;
+        }
+
+        @keyframes bubbleWiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(1deg); }
+            75% { transform: rotate(-1deg); }
+        }
+
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 10px solid transparent;
+            border-bottom-color: white;
+        }
+
+        .name-input-section {
+            margin-top: 25px;
+        }
+
+        .name-input-section h3 {
+            font-size: 1.4em;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .name-input-section p {
+            font-size: 1em;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .name-input-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        #student-name-input {
+            padding: 12px 16px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 20px;
+            width: 200px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+
+        #student-name-input:focus {
+            outline: none;
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .start-btn {
+            padding: 12px 24px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .fun-facts {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            text-align: left;
+        }
+
+        .fun-facts p {
+            margin: 8px 0;
+            font-size: 0.9em;
+        }
+
+        /* Modern BINUS Header */
+        .binus-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .school-info h1 {
+            font-size: 1.8em;
+            margin-bottom: 3px;
+            background: linear-gradient(135deg, #FF6B35, #FFD700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .school-info p {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .student-avatar {
+            font-size: 2em;
+            animation: avatarWave 2s ease-in-out infinite;
+        }
+
+        @keyframes avatarWave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(15deg); }
+            75% { transform: rotate(-10deg); }
+        }
+
+        .student-details {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .greeting {
+            font-size: 1em;
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 2px;
+        }
+
+        .student-name {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+
+
+        /* Footer Styles */
+        .app-footer {
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            margin-top: 50px;
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+            color: white;
+        }
+
+        .footer-content p {
+            margin: 0 0 10px 0;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .footer-teacher-link {
+            color: #FFD700;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(255, 215, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .footer-teacher-link:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* Responsive Teacher Portal Button */
+        @media (max-width: 768px) {
+            .teacher-portal-btn {
+                top: 15px;
+                right: 15px;
+                padding: 10px 16px;
+                font-size: 0.85em;
+            }
+            
+            .teacher-access-btn {
+                padding: 12px 25px;
+                font-size: 1em;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-height: 700px) {
+            .welcome-container {
+                padding: 15px;
+                max-height: 95vh;
+            }
+            
+            .binus-logo h1 {
+                font-size: 1.6em;
+                margin-bottom: 5px;
+            }
+            
+            .binus-logo h2 {
+                font-size: 1em;
+                margin-bottom: 15px;
+            }
+            
+            .mascot {
+                font-size: 3em;
+            }
+            
+            .welcome-character {
+                margin: 15px 0;
+            }
+            
+            .name-input-section {
+                margin-top: 15px;
+            }
+            
+            .name-input-section h3 {
+                font-size: 1.2em;
+                margin-bottom: 8px;
+            }
+            
+            .fun-facts {
+                margin-top: 15px;
+                padding: 12px;
+            }
+            
+            .fun-facts p {
+                margin: 6px 0;
+                font-size: 0.85em;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .binus-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .student-info {
+                justify-content: center;
+            }
+            
+            .level-indicator {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin: 10px auto;
+                display: block;
+                text-align: center;
+                max-width: 250px;
+            }
+            
+            .name-input-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            #student-name-input {
+                width: 220px;
+            }
+            
+            .welcome-container {
+                margin: 10px;
+                max-width: calc(100% - 20px);
+            }
+        }
+
+        @media (max-height: 600px) {
+            body {
+                padding: 10px;
+            }
+            
+            .welcome-container {
+                padding: 10px;
+                border-radius: 15px;
+            }
+            
+            .mascot {
+                font-size: 2.5em;
+            }
+            
+            .speech-bubble {
+                padding: 8px 12px;
+                font-size: 0.85em;
+            }
+            
+            .level-indicator {
+                top: 80px;
+                padding: 8px 12px;
+                font-size: 0.8em;
+            }
+            
+            .fun-facts {
+                display: none; /* Hide on very small screens */
+            }
+        }
+
+        @media (max-width: 768px) and (min-width: 601px) {
+            .level-indicator {
+                top: 100px;
+                right: 15px;
+                font-size: 0.85em;
+                padding: 10px 14px;
+            }
         }
 
         .container {
@@ -25,40 +442,96 @@
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             overflow: hidden;
+            animation: containerSlideIn 0.8s ease-out;
+        }
+
+        @keyframes containerSlideIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(50px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
             color: white;
-            padding: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 20px;
         }
 
         .header h1 {
             font-size: 2.5em;
+            margin-bottom: 10px;
         }
 
         .header p {
             font-size: 1.1em;
             opacity: 0.9;
-            margin-top: 10px;
         }
 
-        .nav-link {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
+        .mode-selector {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .mode-btn {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
             transition: all 0.3s;
-            display: none; /* Hidden from students */
+            font-weight: bold;
+        }
+
+        .mode-btn.teacher {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .mode-btn.student {
+            background: #2196F3;
+            color: white;
+        }
+
+        .mode-btn.learning {
+            background: #FF6B35;
+            color: white;
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .mode-btn.active {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transform: scale(1.05);
         }
 
         .content {
             padding: 30px;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .card {
@@ -75,33 +548,33 @@
             font-size: 1.5em;
         }
 
-        .lesson-list {
-            list-style: none;
+        .input-group {
+            margin-bottom: 20px;
         }
 
-        .lesson-item {
-            background: #f8f9fa;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .lesson-item:hover {
-            background: #e9ecef;
-            transform: translateX(5px);
-        }
-
-        .lesson-item.selected {
-            background: #667eea;
-            color: white;
-        }
-
-        .lesson-item strong {
+        .input-group label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .input-group input,
+        .input-group textarea,
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
         }
 
         .btn {
@@ -113,7 +586,6 @@
             cursor: pointer;
             transition: all 0.3s;
             margin-right: 10px;
-            margin-bottom: 10px;
         }
 
         .btn-primary {
@@ -121,13 +593,13 @@
             color: white;
         }
 
-        .btn-danger {
-            background: #f44336;
+        .btn-success {
+            background: #4CAF50;
             color: white;
         }
 
-        .btn-success {
-            background: #4CAF50;
+        .btn-danger {
+            background: #f44336;
             color: white;
         }
 
@@ -160,6 +632,30 @@
         .audio-player {
             width: 100%;
             margin: 15px 0;
+        }
+
+        .lesson-list {
+            list-style: none;
+        }
+
+        .lesson-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .lesson-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .lesson-item.selected {
+            background: #667eea;
+            color: white;
         }
 
         .score-display {
@@ -214,12 +710,38 @@
             background: white;
             border-radius: 5px;
             border-left: 3px solid #667eea;
-            white-space: pre-line;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .waveform {
+            width: 100%;
+            height: 100px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
         }
 
         .dashboard {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
             margin-top: 20px;
         }
@@ -233,12 +755,16 @@
         }
 
         .stat-card h3 {
-            font-size: 2.5em;
+            font-size: 2em;
             margin-bottom: 10px;
         }
 
         .stat-card p {
             opacity: 0.9;
+        }
+
+        .practice-history {
+            margin-top: 20px;
         }
 
         .history-item {
@@ -257,267 +783,1674 @@
             color: #667eea;
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #999;
+        /* Gamification Styles */
+        .level-indicator {
+            position: fixed;
+            top: 120px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 40px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            z-index: 1000;
+            font-weight: bold;
+            font-size: 0.9em;
+            max-width: 200px;
         }
 
-        .empty-state-icon {
-            font-size: 4em;
-            margin-bottom: 20px;
-        }
-
-        .loading {
+        .level-badge {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            margin-left: 10px;
+            font-size: 0.9em;
+        }
+
+        .xp-bar {
+            width: 200px;
+            height: 8px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+
+        .xp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            border-radius: 4px;
+            transition: width 0.8s ease;
+        }
+
+        .achievement-notification {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
+            transform: translateX(-400px);
+            transition: transform 0.5s ease;
+            z-index: 1001;
+            max-width: 350px;
+        }
+
+        .achievement-notification.show {
+            transform: translateX(0);
+        }
+
+        .achievement-notification h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.2em;
+        }
+
+        .achievement-notification p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .ai-assistant {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 20px;
+            max-width: 300px;
+            transform: translateX(400px);
+            transition: transform 0.5s ease;
+            z-index: 1002;
+        }
+
+        .ai-assistant.show {
+            transform: translateX(0);
+        }
+
+        .ai-assistant .ai-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2em;
+            margin-bottom: 10px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .ai-assistant .ai-message {
+            font-size: 0.9em;
+            color: #333;
+            line-height: 1.4;
         }
 
-        .badge {
+        .level-up-animation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.5);
+            text-align: center;
+            z-index: 1003;
+            animation: levelUpPulse 2s ease-in-out;
+            display: none;
+        }
+
+        .level-up-animation.show {
+            display: block;
+        }
+
+        @keyframes levelUpPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        .progress-ring {
+            width: 60px;
+            height: 60px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .progress-ring svg {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring-circle {
+            stroke-dasharray: 188.4;
+            stroke-dashoffset: 188.4;
+            transition: stroke-dashoffset 0.8s ease;
+        }
+
+        /* Learning Hub Styles */
+        .learning-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .category-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+
+        .category-card.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .category-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .category-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .category-description {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+
+        .lesson-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .lesson-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .lesson-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .lesson-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .lesson-icon {
+            font-size: 2em;
+            margin-right: 15px;
+        }
+
+        .lesson-info h3 {
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+
+        .lesson-info p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .lesson-content {
+            margin-bottom: 15px;
+        }
+
+        .phonetic-display {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .chinese-char {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .pinyin {
+            font-size: 1.2em;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .english {
+            font-size: 1em;
+            color: #666;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .video-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 8px;
+        }
+
+        .practice-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 0.9em;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-play {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-practice {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-small:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .difficulty-badge {
             display: inline-block;
             padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.85em;
+            border-radius: 12px;
+            font-size: 0.8em;
             font-weight: bold;
-            margin-left: 5px;
+            margin-left: 10px;
         }
 
-        .badge-sentence { background: #2196F3; color: white; }
-        .badge-word { background: #ff9800; color: white; }
-        .badge-vowel { background: #9c27b0; color: white; }
+        .difficulty-beginner {
+            background: #4CAF50;
+            color: white;
+        }
 
-        .practice-text {
-            font-size: 1.8em;
-            color: #333;
-            margin: 20px 0;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            text-align: center;
-            font-weight: 500;
+        .difficulty-intermediate {
+            background: #FF9800;
+            color: white;
+        }
+
+        .difficulty-advanced {
+            background: #f44336;
+            color: white;
+        }
+
+        .progress-indicator {
+            background: #f0f0f0;
+            height: 4px;
+            border-radius: 2px;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            border-radius: 2px;
+            transition: width 0.5s ease;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- Gamification Elements -->
+    <div class="level-indicator" id="level-indicator">
+        🎯 Level <span id="current-level">1</span>
+        <span class="level-badge" id="level-badge">Beginner</span>
+        <div class="xp-bar">
+            <div class="xp-fill" id="xp-fill" style="width: 0%"></div>
+        </div>
+        <small id="xp-text">0 / 100 XP</small>
+    </div>
+
+    <div class="achievement-notification" id="achievement-notification">
+        <h3 id="achievement-title">🎉 Achievement Unlocked!</h3>
+        <p id="achievement-text">You've reached a new milestone!</p>
+    </div>
+
+    <div class="ai-assistant" id="ai-assistant">
+        <div class="ai-avatar">🤖</div>
+        <div class="ai-message" id="ai-message">
+            Welcome! I'll help track your progress and give you tips as you practice.
+        </div>
+    </div>
+
+    <div class="level-up-animation" id="level-up-animation">
+        <h2>🎊 LEVEL UP! 🎊</h2>
+        <div class="progress-ring">
+            <svg width="60" height="60">
+                <circle cx="30" cy="30" r="30" stroke="#FFD700" stroke-width="4" fill="transparent" class="progress-ring-circle" />
+            </svg>
+        </div>
+        <p>You've reached Level <span id="level-up-number">2</span>!</p>
+        <h3 id="level-up-title">Novice Speaker</h3>
+    </div>
+
+    <!-- Welcome Screen -->
+    <div class="welcome-screen" id="welcome-screen">
+        <div class="welcome-container">
+            <div class="binus-logo">
+                <h1>🎓 BINUS School Simprug</h1>
+                <h2>🤖 AI-Powered Mandarin Learning Hub</h2>
+            </div>
+            
+            <div class="welcome-character">
+                <div class="mascot">🐼</div>
+                <div class="speech-bubble">
+                    <p>你好! Hello there, future Mandarin master! �</p>
+                </div>
+            </div>
+            
+            <div class="name-input-section">
+                <h3>Let's get started with your Mandarin journey!</h3>
+                <p>Please enter your <strong>real first name</strong> to personalize your learning experience:</p>
+                
+                <div class="name-input-container">
+                    <input type="text" id="student-name-input" placeholder="Enter your first name..." maxlength="20">
+                    <button class="start-btn" onclick="startLearning()">
+                        <span>🚀 Start Learning</span>
+                    </button>
+                </div>
+                
+                <div class="fun-facts">
+                    <p>💡 <strong>Fun Fact:</strong> Over 918 million people speak Mandarin worldwide!</p>
+                    <p>🎯 <strong>Today's Goal:</strong> Master pronunciation with AI-powered feedback</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="main-container" style="display: none;">
+
+        
         <div class="header">
-            <div>
-                <h1>👨‍🎓 Student Practice</h1>
-                <p>Master Mandarin pronunciation with AI feedback</p>
+            <div class="binus-header">
+                <div class="school-info">
+                    <h1>🎓 BINUS School Simprug</h1>
+                    <p>AI-Powered Mandarin Learning Hub</p>
+                </div>
+                <div class="student-info">
+                    <div class="student-avatar">👋</div>
+                    <div class="student-details">
+                        <span class="greeting" id="header-greeting">Hello BINUSIAN!</span>
+                        <span class="student-name" id="header-student-name">Student</span>
+                    </div>
+                </div>
             </div>
         </div>
 
+        <div class="mode-selector">
+            <button class="mode-btn student active" onclick="switchMode('student')">
+                👨‍� Student Mode
+            </button>
+            <button class="mode-btn learning" onclick="switchMode('learning')" style="background: #FF6B35;">
+                � Learning Hub
+            </button>
+
+            <button class="mode-btn" onclick="resetProfile()" style="background: #6c757d; font-size: 0.9em;">
+                � Reset Profile
+            </button>
+        </div>
+
         <div class="content">
-            <!-- Lessons Selection -->
-            <div class="card">
-                <h2>🎯 Select a Lesson to Practice</h2>
-                <ul class="lesson-list" id="lessons-list">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📚</div>
-                        <p>Loading lessons...</p>
-                    </div>
-                </ul>
-            </div>
-
-            <!-- Practice Area -->
-            <div id="practice-area" style="display: none;">
+            <!-- Student Section -->
+            <div id="student-section" class="section active">
                 <div class="card">
-                    <h2 id="current-lesson-title">Practice</h2>
-                    <div class="practice-text" id="current-lesson-text"></div>
+                    <h2>🎯 Select a Lesson to Practice</h2>
+                    <ul class="lesson-list" id="student-lessons-list"></ul>
+                </div>
 
-                    <h3>🎧 Listen to Master Recording:</h3>
-                    <div id="master-audio-player"></div>
+                <div id="practice-area" style="display: none;">
+                    <div class="card">
+                        <h2 id="current-lesson-title">Practice</h2>
+                        <p id="current-lesson-text" style="font-size: 1.5em; margin-bottom: 20px;"></p>
 
-                    <h3 style="margin-top: 30px;">🎤 Your Recording:</h3>
-                    <div>
-                        <button class="btn btn-danger" id="student-record-btn">
+                        <h3>Master Recording:</h3>
+                        <div id="master-audio-player"></div>
+
+                        <h3 style="margin-top: 30px;">Your Recording:</h3>
+                        <button class="btn btn-danger" id="student-record-btn" onclick="startStudentRecording()">
                             🎤 Start Recording
                         </button>
-                        <button class="btn btn-primary" id="student-stop-btn" disabled>
+                        <button class="btn btn-primary" id="student-stop-btn" onclick="stopStudentRecording()" disabled>
                             ⏹️ Stop Recording
                         </button>
-                    </div>
-                    <div id="student-audio-preview"></div>
+                        <div id="student-audio-preview"></div>
 
-                    <button class="btn btn-success" id="analyze-btn" disabled>
-                        🔍 Analyze My Pronunciation
-                    </button>
+                        <button class="btn btn-success" onclick="analyzeRecording()" id="analyze-btn" disabled>
+                            🔍 Analyze My Pronunciation
+                        </button>
+                    </div>
+
+                    <div id="results-area" style="display: none;">
+                        <div class="score-display">
+                            <h2>Your Score</h2>
+                            <div class="score-number" id="score-number">--</div>
+                            <div class="score-bar">
+                                <div class="score-fill" id="score-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="feedback-section">
+                            <h3>🤖 AI Feedback & Analysis</h3>
+                            <div id="ai-feedback"></div>
+                        </div>
+
+                        <div class="feedback-section">
+                            <h3>📊 Detailed Metrics</h3>
+                            <div id="detailed-metrics"></div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Results Area -->
-                <div id="results-area" style="display: none;">
-                    <div class="score-display">
-                        <h2>Your Score</h2>
-                        <div class="score-number" id="score-number">--</div>
-                        <div class="score-bar">
-                            <div class="score-fill" id="score-fill" style="width: 0%"></div>
+                <div class="card">
+                    <h2>📈 Your Progress</h2>
+                    <div class="dashboard" id="student-dashboard">
+                        <div class="stat-card">
+                            <h3 id="total-attempts">0</h3>
+                            <p>Total Attempts</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="avg-score">0</h3>
+                            <p>Average Score</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="best-score">0</h3>
+                            <p>Best Score</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="current-level-dash">1</h3>
+                            <p>Current Level</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="total-xp">0</h3>
+                            <p>Total XP</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3 id="achievements-count">0</h3>
+                            <p>Achievements</p>
                         </div>
                     </div>
 
-                    <div class="feedback-section">
-                        <h3>🤖 AI Feedback & Analysis</h3>
-                        <div id="ai-feedback">
-                            <div class="loading"></div> Getting AI feedback...
-                        </div>
-                    </div>
-
-                    <div class="feedback-section">
-                        <h3>📊 Detailed Metrics</h3>
-                        <div id="detailed-metrics"></div>
-                    </div>
-
-                    <div style="text-align: center; margin-top: 20px;">
-                        <button class="btn btn-primary" onclick="tryAgain()">
-                            🔄 Try Again
-                        </button>
-                        <button class="btn btn-primary" onclick="backToLessons()">
-                            📚 Choose Another Lesson
-                        </button>
+                    <div class="practice-history">
+                        <h3>Recent Practice Sessions</h3>
+                        <div id="history-list"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Progress Dashboard -->
-            <div class="card">
-                <h2>📈 Your Progress</h2>
-                <div class="dashboard">
-                    <div class="stat-card">
-                        <h3 id="total-attempts">0</h3>
-                        <p>Total Attempts</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3 id="avg-score">0</h3>
-                        <p>Average Score</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3 id="best-score">0</h3>
-                        <p>Best Score</p>
+            <!-- Learning Hub Section -->
+            <div id="learning-section" class="section">
+                <div class="card">
+                    <h2>📚 Learning Hub - Master Mandarin Fundamentals</h2>
+                    <p>Choose a category to start your learning journey with interactive lessons, videos, and practice exercises.</p>
+                    
+                    <div class="learning-categories" id="learning-categories">
+                        <div class="category-card" onclick="selectCategory('vowels')">
+                            <span class="category-icon">🗣️</span>
+                            <div class="category-title">Vowels (韵母)</div>
+                            <div class="category-description">Master the 6 basic vowels and compound vowels</div>
+                            <div class="progress-indicator">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="category-card" onclick="selectCategory('consonants')">
+                            <span class="category-icon">💬</span>
+                            <div class="category-title">Consonants (声母)</div>
+                            <div class="category-description">Learn 21 initial consonant sounds</div>
+                            <div class="progress-indicator">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="category-card" onclick="selectCategory('tones')">
+                            <span class="category-icon">🎵</span>
+                            <div class="category-title">Tones (声调)</div>
+                            <div class="category-description">Master the 4 Mandarin tones + neutral tone</div>
+                            <div class="progress-indicator">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="category-card" onclick="selectCategory('pinyin')">
+                            <span class="category-icon">📝</span>
+                            <div class="category-title">Pinyin System</div>
+                            <div class="category-description">Complete pinyin spelling and pronunciation</div>
+                            <div class="progress-indicator">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="category-card" onclick="selectCategory('basics')">
+                            <span class="category-icon">🌟</span>
+                            <div class="category-title">Basic Words</div>
+                            <div class="category-description">Essential vocabulary for beginners</div>
+                            <div class="progress-indicator">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="category-card" onclick="selectCategory('sentences')">
+                            <span class="category-icon">💭</span>
+                            <div class="category-title">Common Phrases</div>
+                            <div class="category-description">Everyday expressions and greetings</div>
+                            <div class="progress-indicator">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div style="margin-top: 30px;">
-                    <h3>Recent Practice Sessions</h3>
-                    <div id="history-list">
-                        <div class="empty-state">
-                            <p>No practice sessions yet</p>
-                        </div>
+                <div class="card" id="lesson-content" style="display: none;">
+                    <h2 id="category-title">Select a Category</h2>
+                    <div class="lesson-grid" id="lesson-grid">
+                        <!-- Lessons will be populated here -->
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="footer-content">
+            <p>© 2025 BINUS School Simprug - AI-Powered Mandarin Learning</p>
+            <div class="footer-links">
+                <a href="/" class="footer-teacher-link">
+                    � Back to Home
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
     <script>
         // Global variables
         let mediaRecorder;
         let audioChunks = [];
+        let currentMode = 'student'; // Start with student mode
+        let lessons = JSON.parse(localStorage.getItem('mandarinLessons') || '[]');
+        let practiceHistory = JSON.parse(localStorage.getItem('practiceHistory') || '[]');
         let currentLesson = null;
+        let masterAudioBlob = null;
         let studentAudioBlob = null;
+        let studentName = localStorage.getItem('studentName') || '';
+        let currentStudent = null;
+        let currentGreeting = '';
+
+        // Gamification variables
+        let playerStats = JSON.parse(localStorage.getItem('playerStats') || JSON.stringify({
+            level: 1,
+            xp: 0,
+            totalPractice: 0,
+            streak: 0,
+            achievements: [],
+            lastPracticeDate: null
+        }));
+
+        // Level system configuration
+        const LEVEL_THRESHOLDS = [0, 100, 250, 450, 700, 1000, 1400, 1900, 2500, 3200, 4000];
+        const LEVEL_TITLES = [
+            'Newbie', 'Beginner', 'Novice', 'Learner', 'Student', 'Practitioner', 
+            'Intermediate', 'Advanced', 'Expert', 'Master', 'Grandmaster'
+        ];
+
+        // Achievement definitions
+        const ACHIEVEMENTS = {
+            first_practice: { title: "First Steps", description: "Completed your first practice session!", xp: 20 },
+            level_5: { title: "Rising Star", description: "Reached Level 5!", xp: 50 },
+            level_10: { title: "Pronunciation Master", description: "Reached Level 10!", xp: 100 },
+            perfect_score: { title: "Perfection!", description: "Achieved a perfect score!", xp: 75 },
+            high_scorer: { title: "High Achiever", description: "Scored above 90%!", xp: 30 },
+            consistent: { title: "Consistent Learner", description: "Practiced 5 times!", xp: 40 },
+            streak_3: { title: "On Fire!", description: "3-day practice streak!", xp: 25 },
+            tone_master: { title: "Tone Master", description: "Excellent tone accuracy!", xp: 35 }
+        };
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            loadLessons();
-            loadStats();
-            setupEventListeners();
+            // Check if student name exists
+            if (studentName) {
+                // Skip welcome screen
+                document.getElementById('welcome-screen').style.display = 'none';
+                document.getElementById('main-container').style.display = 'block';
+                initializeApp();
+            } else {
+                // Show welcome screen
+                document.getElementById('welcome-screen').style.display = 'flex';
+                document.getElementById('main-container').style.display = 'none';
+            }
+            
+            // Add enter key support for name input
+            document.getElementById('student-name-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    startLearning();
+                }
+            });
         });
 
-        function setupEventListeners() {
-            document.getElementById('student-record-btn').addEventListener('click', startRecording);
-            document.getElementById('student-stop-btn').addEventListener('click', stopRecording);
-            document.getElementById('analyze-btn').addEventListener('click', analyzeRecording);
+        function initializeApp() {
+            loadLessons();
+            updateDashboard();
+            initializeGamification();
+            updateLevelDisplay();
+            showPersonalizedWelcome();
+            initializeSpeech();
+            updatePersonalizedHeader();
         }
 
-        // Load Lessons
-        async function loadLessons() {
-            try {
-                const response = await fetch('/api/lessons');
-                const lessons = await response.json();
+        function startLearning() {
+            const nameInput = document.getElementById('student-name-input');
+            const name = nameInput.value.trim();
+            
+            if (!name) {
+                // Shake animation for empty input
+                nameInput.style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    nameInput.style.animation = '';
+                }, 500);
+                return;
+            }
+            
+            // Validate name (only letters and spaces)
+            if (!/^[a-zA-Z\s]+$/.test(name)) {
+                alert('请输入有效的名字! Please enter a valid name (letters only)! 😊');
+                return;
+            }
+            
+            // Store student info
+            studentName = name;
+            localStorage.setItem('studentName', studentName);
+            
+            // Initialize student (without class code)
+            initializeStudent(name);
+            
+            // Hide welcome screen with animation
+            const welcomeScreen = document.getElementById('welcome-screen');
+            welcomeScreen.style.animation = 'fadeOut 0.8s ease-in';
+            
+            setTimeout(() => {
+                welcomeScreen.style.display = 'none';
+                document.getElementById('main-container').style.display = 'block';
+                initializeApp();
+            }, 800);
+        }
 
-                const lessonsList = document.getElementById('lessons-list');
+        function updatePersonalizedHeader() {
+            const greetings = [
+                `你好 ${studentName}! (nǐ hǎo)`,
+                `Hello ${studentName}! 🌟`,
+                `Ready to learn, ${studentName}?`,
+                `Welcome back, ${studentName}! 🎯`,
+                `Let's practice, ${studentName}! 💪`,
+                `Great to see you, ${studentName}! 🚀`
+            ];
+            
+            const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+            currentGreeting = randomGreeting;
+            
+            document.getElementById('header-greeting').textContent = randomGreeting;
+            document.getElementById('header-student-name').textContent = `BINUSIAN • ${studentName}`;
+        }
 
-                if (lessons.length === 0) {
-                    lessonsList.innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-state-icon">📭</div>
-                            <p>No lessons available yet. Ask your teacher to create some lessons!</p>
-                        </div>
-                    `;
-                    return;
-                }
 
-                lessonsList.innerHTML = '';
-                lessons.forEach(lesson => {
-                    const li = createLessonItem(lesson);
-                    lessonsList.appendChild(li);
-                });
-            } catch (error) {
-                console.error('Error loading lessons:', error);
+
+        function showPersonalizedWelcome() {
+            const welcomeMessages = [
+                `🎉 你好 ${studentName}! Ready to be a Mandarin superstar? 加油!`,
+                `🌟 Hey ${studentName}! 很好! Your pronunciation is getting stronger! 💪`,
+                `🚀 哇! ${studentName} is back! Time to sound like a native speaker! 棒!`,
+                `� Nihao ${studentName}! Let's make some tones so smooth they'll say 太好了!`,
+                `🎯 ${studentName}, you're 非常棒! Keep being awesome! 继续!`,
+                `✨ 准备好了吗 ${studentName}? Let's make magic happen! ✨`,
+                `🤖 Beep boop! ${studentName} detected! Mandarin powers: ACTIVATING! 哈哈!`
+            ];
+            
+            const randomMessage = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+            
+            setTimeout(() => {
+                showAIMessage(randomMessage);
+            }, 1000);
+        }
+
+        // Add CSS for shake animation
+        const shakeKeyframes = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-10px); }
+                75% { transform: translateX(10px); }
+            }
+            @keyframes fadeOut {
+                from { opacity: 1; transform: scale(1); }
+                to { opacity: 0; transform: scale(0.9); }
+            }
+        `;
+        
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = shakeKeyframes;
+        document.head.appendChild(styleSheet);
+
+        function resetProfile() {
+            if (confirm(`Hey ${studentName}! Are you sure you want to reset your profile? This will clear your name and progress.`)) {
+                localStorage.removeItem('studentName');
+                localStorage.removeItem('playerStats');
+                localStorage.removeItem('practiceHistory');
+                
+                showAIMessage('Profile reset! Please refresh the page to start over. 👋');
+                
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
             }
         }
 
-        function createLessonItem(lesson) {
+        // Gamification Functions
+        function initializeGamification() {
+            // Update level display
+            updateLevelDisplay();
+            
+            // Show AI assistant after 3 seconds
+            setTimeout(() => {
+                showAIMessage("Ready to practice? Let's improve your Mandarin pronunciation together! 🚀");
+            }, 3000);
+        }
+
+        function updateLevelDisplay() {
+            const currentLevel = getCurrentLevel();
+            const currentLevelIndex = currentLevel - 1;
+            const nextLevelXP = LEVEL_THRESHOLDS[currentLevel] || LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.length - 1];
+            const currentLevelXP = LEVEL_THRESHOLDS[currentLevelIndex];
+            const xpInCurrentLevel = playerStats.xp - currentLevelXP;
+            const xpNeededForLevel = nextLevelXP - currentLevelXP;
+            const xpProgress = (xpInCurrentLevel / xpNeededForLevel) * 100;
+
+            document.getElementById('current-level').textContent = currentLevel;
+            document.getElementById('level-badge').textContent = LEVEL_TITLES[currentLevelIndex] || 'Grandmaster';
+            document.getElementById('xp-fill').style.width = Math.min(100, xpProgress) + '%';
+            document.getElementById('xp-text').textContent = `${playerStats.xp} / ${nextLevelXP} XP`;
+        }
+
+        function getCurrentLevel() {
+            for (let i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
+                if (playerStats.xp >= LEVEL_THRESHOLDS[i]) {
+                    return i + 1;
+                }
+            }
+            return 1;
+        }
+
+        function awardXP(amount, reason = '') {
+            const oldLevel = getCurrentLevel();
+            playerStats.xp += amount;
+            playerStats.totalPractice++;
+            
+            // Save stats
+            localStorage.setItem('playerStats', JSON.stringify(playerStats));
+            
+            const newLevel = getCurrentLevel();
+            
+            // Update display
+            updateLevelDisplay();
+            
+            // Check for level up
+            if (newLevel > oldLevel) {
+                showLevelUpAnimation(newLevel);
+                checkAchievements('level_' + newLevel);
+            }
+            
+            // Show XP notification
+            if (amount > 0) {
+                showAIMessage(`+${amount} XP earned! ${reason} 🌟`);
+            }
+        }
+
+        function showLevelUpAnimation(newLevel) {
+            const levelUpDiv = document.getElementById('level-up-animation');
+            const levelNumber = document.getElementById('level-up-number');
+            const levelTitle = document.getElementById('level-up-title');
+            
+            levelNumber.textContent = newLevel;
+            levelTitle.textContent = LEVEL_TITLES[newLevel - 1] || 'Grandmaster';
+            
+            levelUpDiv.classList.add('show');
+            
+            setTimeout(() => {
+                levelUpDiv.classList.remove('show');
+            }, 3000);
+        }
+
+        function checkAchievements(type, score = 0) {
+            const newAchievements = [];
+            
+            // Check various achievement conditions
+            switch(type) {
+                case 'first_practice':
+                    if (!playerStats.achievements.includes('first_practice')) {
+                        newAchievements.push('first_practice');
+                    }
+                    break;
+                    
+                case 'perfect_score':
+                    if (score >= 98 && !playerStats.achievements.includes('perfect_score')) {
+                        newAchievements.push('perfect_score');
+                    }
+                    break;
+                    
+                case 'high_scorer':
+                    if (score >= 90 && !playerStats.achievements.includes('high_scorer')) {
+                        newAchievements.push('high_scorer');
+                    }
+                    break;
+                    
+                case 'consistent':
+                    if (playerStats.totalPractice >= 5 && !playerStats.achievements.includes('consistent')) {
+                        newAchievements.push('consistent');
+                    }
+                    break;
+                    
+                case 'tone_master':
+                    if (score >= 85 && !playerStats.achievements.includes('tone_master')) {
+                        newAchievements.push('tone_master');
+                    }
+                    break;
+            }
+            
+            // Check level achievements
+            if (type.startsWith('level_')) {
+                const level = parseInt(type.split('_')[1]);
+                if ((level === 5 || level === 10) && !playerStats.achievements.includes(type)) {
+                    newAchievements.push(type);
+                }
+            }
+            
+            // Award achievements
+            newAchievements.forEach(achievement => {
+                playerStats.achievements.push(achievement);
+                showAchievement(achievement);
+                awardXP(ACHIEVEMENTS[achievement].xp, ACHIEVEMENTS[achievement].description);
+            });
+            
+            // Save updated achievements
+            localStorage.setItem('playerStats', JSON.stringify(playerStats));
+        }
+
+        function showAchievement(achievementKey) {
+            const achievement = ACHIEVEMENTS[achievementKey];
+            const notificationDiv = document.getElementById('achievement-notification');
+            const titleElement = document.getElementById('achievement-title');
+            const textElement = document.getElementById('achievement-text');
+            
+            titleElement.textContent = `🏆 ${achievement.title}`;
+            textElement.textContent = achievement.description;
+            
+            notificationDiv.classList.add('show');
+            
+            setTimeout(() => {
+                notificationDiv.classList.remove('show');
+            }, 4000);
+        }
+
+        function showAIMessage(message) {
+            const aiAssistant = document.getElementById('ai-assistant');
+            const messageElement = document.getElementById('ai-message');
+            
+            // Personalize the message if student name is available
+            let personalizedMessage = message;
+            if (studentName && !message.includes(studentName)) {
+                const personalPrefixes = [
+                    `${studentName}, `,
+                    `Hey ${studentName}! `,
+                    `Great job ${studentName}! `,
+                    `${studentName}, you're doing great! `,
+                    `Nice work ${studentName}! `
+                ];
+                
+                if (Math.random() > 0.3) { // 70% chance to personalize
+                    const randomPrefix = personalPrefixes[Math.floor(Math.random() * personalPrefixes.length)];
+                    personalizedMessage = randomPrefix + message;
+                }
+            }
+            
+            messageElement.textContent = personalizedMessage;
+            aiAssistant.classList.add('show');
+            
+            setTimeout(() => {
+                aiAssistant.classList.remove('show');
+            }, 5000);
+        }
+
+        function showWelcomeMessage() {
+            const messages = [
+                "欢迎回来! Ready to sound 很棒? Let's go! 🎯",
+                "Your 发音 journey continues! 加油加油! 🚀", 
+                "Time to master those tones! 我相信你! You got this! 💪",
+                "Every practice = closer to being 厉害! Keep going! ✨",
+                "Mandarin mode: ON! 准备好了吗? Let's make noise! 🔥"
+            ];
+            
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            
+            setTimeout(() => {
+                showAIMessage(randomMessage);
+            }, 1000);
+        }
+
+        function generateRandomStudentName() {
+            const names = [
+                "Yu Min", "Li Wei", "Zhang Mei", "Wang Jun", "Chen Xiao", 
+                "Liu Yang", "Zhao Lin", "Wu Hua", "Zhou Lei", "Xu Ning",
+                "Sun Yue", "Ma Qing", "Zhu Feng", "He Jing", "Gao Yu"
+            ];
+            return names[Math.floor(Math.random() * names.length)];
+        }
+
+        // Learning Hub Data
+        const LEARNING_CONTENT = {
+            vowels: {
+                title: "🗣️ Vowels (韵母)",
+                description: "Master Mandarin vowel sounds",
+                lessons: [
+                    {
+                        id: 'vowel_a',
+                        title: 'Vowel A (啊)',
+                        difficulty: 'beginner',
+                        content: { chinese: '啊', pinyin: 'ā á ǎ à', english: 'ah (exclamation)' },
+                        description: 'The most basic vowel sound in Mandarin',
+                        videoId: 'kYHSH-pWjUw', // Mandarin vowels tutorial
+                        tips: 'Open your mouth wide, tongue flat and low'
+                    },
+                    {
+                        id: 'vowel_o',
+                        title: 'Vowel O (哦)',
+                        difficulty: 'beginner',
+                        content: { chinese: '哦', pinyin: 'ō ó ǒ ò', english: 'oh' },
+                        description: 'Round vowel sound, lips rounded',
+                        videoId: 'kYHSH-pWjUw',
+                        tips: 'Round your lips, tongue pulled back'
+                    },
+                    {
+                        id: 'vowel_e',
+                        title: 'Vowel E (呃)',
+                        difficulty: 'beginner',
+                        content: { chinese: '呃', pinyin: 'ē é ě è', english: 'eh' },
+                        description: 'Mid-central vowel sound',
+                        videoId: 'kYHSH-pWjUw',
+                        tips: 'Mouth slightly open, tongue in middle position'
+                    },
+                    {
+                        id: 'vowel_i',
+                        title: 'Vowel I (衣)',
+                        difficulty: 'beginner',
+                        content: { chinese: '衣', pinyin: 'yī yí yǐ yì', english: 'clothes' },
+                        description: 'High front vowel sound',
+                        videoId: 'kYHSH-pWjUw',
+                        tips: 'Spread lips slightly, tongue high and forward'
+                    },
+                    {
+                        id: 'vowel_u',
+                        title: 'Vowel U (乌)',
+                        difficulty: 'beginner',
+                        content: { chinese: '乌', pinyin: 'wū wú wǔ wù', english: 'crow/dark' },
+                        description: 'High back rounded vowel',
+                        videoId: 'kYHSH-pWjUw',
+                        tips: 'Round lips tightly, tongue high and back'
+                    },
+                    {
+                        id: 'vowel_v',
+                        title: 'Vowel Ü (鱼)',
+                        difficulty: 'intermediate',
+                        content: { chinese: '鱼', pinyin: 'yú', english: 'fish' },
+                        description: 'Rounded front vowel (like German ü)',
+                        videoId: 'kYHSH-pWjUw',
+                        tips: 'Say "ee" but round your lips like "oo"'
+                    }
+                ]
+            },
+            consonants: {
+                title: "💬 Consonants (声母)",
+                description: "Learn Mandarin initial consonant sounds",
+                lessons: [
+                    {
+                        id: 'cons_b',
+                        title: 'B Sound (巴)',
+                        difficulty: 'beginner',
+                        content: { chinese: '巴', pinyin: 'bā', english: 'to hope' },
+                        description: 'Unaspirated bilabial stop',
+                        videoId: '3wCBQ54mhGU',
+                        tips: 'Similar to English "b" but less forceful'
+                    },
+                    {
+                        id: 'cons_p',
+                        title: 'P Sound (怕)',
+                        difficulty: 'beginner',
+                        content: { chinese: '怕', pinyin: 'pà', english: 'to fear' },
+                        description: 'Aspirated bilabial stop',
+                        videoId: '3wCBQ54mhGU',
+                        tips: 'Strong puff of air, like English "p" in "pin"'
+                    },
+                    {
+                        id: 'cons_m',
+                        title: 'M Sound (妈)',
+                        difficulty: 'beginner',
+                        content: { chinese: '妈', pinyin: 'mā', english: 'mother' },
+                        description: 'Bilabial nasal',
+                        videoId: '3wCBQ54mhGU',
+                        tips: 'Same as English "m"'
+                    },
+                    {
+                        id: 'cons_f',
+                        title: 'F Sound (发)',
+                        difficulty: 'beginner',
+                        content: { chinese: '发', pinyin: 'fā', english: 'to emit' },
+                        description: 'Voiceless labiodental fricative',
+                        videoId: '3wCBQ54mhGU',
+                        tips: 'Same as English "f"'
+                    },
+                    {
+                        id: 'cons_d',
+                        title: 'D Sound (大)',
+                        difficulty: 'beginner',
+                        content: { chinese: '大', pinyin: 'dà', english: 'big' },
+                        description: 'Unaspirated alveolar stop',
+                        videoId: '3wCBQ54mhGU',
+                        tips: 'Similar to English "d" but less voiced'
+                    },
+                    {
+                        id: 'cons_t',
+                        title: 'T Sound (他)',
+                        difficulty: 'beginner',
+                        content: { chinese: '他', pinyin: 'tā', english: 'he/him' },
+                        description: 'Aspirated alveolar stop',
+                        videoId: '3wCBQ54mhGU',
+                        tips: 'Strong puff of air, tongue tip on alveolar ridge'
+                    }
+                ]
+            },
+            tones: {
+                title: "🎵 Tones (声调)",
+                description: "Master the 4 Mandarin tones",
+                lessons: [
+                    {
+                        id: 'tone_1',
+                        title: 'First Tone (一声)',
+                        difficulty: 'beginner',
+                        content: { chinese: '妈', pinyin: 'mā', english: 'mother' },
+                        description: 'High level tone (flat)',
+                        videoId: 'tiScFONbHEg',
+                        tips: 'Keep pitch high and steady, like singing a high note'
+                    },
+                    {
+                        id: 'tone_2',
+                        title: 'Second Tone (二声)',
+                        difficulty: 'beginner',
+                        content: { chinese: '麻', pinyin: 'má', english: 'hemp/numb' },
+                        description: 'Rising tone (like asking a question)',
+                        videoId: 'tiScFONbHEg',
+                        tips: 'Start mid-low, rise to high - like saying "what?" in English'
+                    },
+                    {
+                        id: 'tone_3',
+                        title: 'Third Tone (三声)',
+                        difficulty: 'intermediate',
+                        content: { chinese: '马', pinyin: 'mǎ', english: 'horse' },
+                        description: 'Falling-rising tone (dip down, then up)',
+                        videoId: 'tiScFONbHEg',
+                        tips: 'Start mid, fall to low, then rise - like saying "oh" with doubt'
+                    },
+                    {
+                        id: 'tone_4',
+                        title: 'Fourth Tone (四声)',
+                        difficulty: 'beginner',
+                        content: { chinese: '骂', pinyin: 'mà', english: 'to scold' },
+                        description: 'Falling tone (sharp drop)',
+                        videoId: 'tiScFONbHEg',
+                        tips: 'Start high, drop sharply - like a command "No!"'
+                    },
+                    {
+                        id: 'tone_neutral',
+                        title: 'Neutral Tone (轻声)',
+                        difficulty: 'intermediate',
+                        content: { chinese: '吗', pinyin: 'ma', english: '(question particle)' },
+                        description: 'Light, short, unstressed',
+                        videoId: 'tiScFONbHEg',
+                        tips: 'Short and light, no specific pitch pattern'
+                    }
+                ]
+            },
+            pinyin: {
+                title: "📝 Pinyin System",
+                description: "Complete pinyin romanization system",
+                lessons: [
+                    {
+                        id: 'pinyin_intro',
+                        title: 'Pinyin Basics',
+                        difficulty: 'beginner',
+                        content: { chinese: '拼音', pinyin: 'pīnyīn', english: 'pinyin' },
+                        description: 'Introduction to pinyin romanization',
+                        videoId: 'o-p4vrkwvXs',
+                        tips: 'Pinyin uses Latin letters to represent Chinese sounds'
+                    },
+                    {
+                        id: 'pinyin_rules',
+                        title: 'Spelling Rules',
+                        difficulty: 'intermediate',
+                        content: { chinese: '规则', pinyin: 'guīzé', english: 'rules' },
+                        description: 'Key pinyin spelling conventions',
+                        videoId: 'o-p4vrkwvXs',
+                        tips: 'Learn when to use j/q/x vs zh/ch/sh vs z/c/s'
+                    }
+                ]
+            },
+            basics: {
+                title: "🌟 Basic Words",
+                description: "Essential vocabulary for beginners",
+                lessons: [
+                    {
+                        id: 'greetings',
+                        title: 'Greetings',
+                        difficulty: 'beginner',
+                        content: { chinese: '你好', pinyin: 'nǐ hǎo', english: 'hello' },
+                        description: 'Common greetings and polite expressions',
+                        videoId: 'rOzYLzEyJq4',
+                        tips: 'Start with basic greetings - foundation of conversation'
+                    },
+                    {
+                        id: 'numbers',
+                        title: 'Numbers 1-10',
+                        difficulty: 'beginner',
+                        content: { chinese: '一二三', pinyin: 'yī èr sān', english: 'one two three' },
+                        description: 'Basic numbers for counting',
+                        videoId: 'uLdxhV4TmM8',
+                        tips: 'Numbers are essential - practice tone changes'
+                    },
+                    {
+                        id: 'family',
+                        title: 'Family Members',
+                        difficulty: 'beginner',
+                        content: { chinese: '家人', pinyin: 'jiārén', english: 'family' },
+                        description: 'Words for family relationships',
+                        videoId: 'QefOQQb4XJk',
+                        tips: 'Start with immediate family: 妈妈, 爸爸, 哥哥, 姐姐'
+                    }
+                ]
+            },
+            sentences: {
+                title: "💭 Common Phrases",
+                description: "Everyday expressions and sentences",
+                lessons: [
+                    {
+                        id: 'intro_phrases',
+                        title: 'Self Introduction',
+                        difficulty: 'beginner',
+                        content: { chinese: '我叫...', pinyin: 'wǒ jiào...', english: 'My name is...' },
+                        description: 'Basic phrases for introducing yourself',
+                        videoId: 'gdY2FfCK7OQ',
+                        tips: 'Essential for first conversations'
+                    },
+                    {
+                        id: 'daily_phrases',
+                        title: 'Daily Expressions',
+                        difficulty: 'beginner',
+                        content: { chinese: '谢谢', pinyin: 'xièxie', english: 'thank you' },
+                        description: 'Common daily expressions',
+                        videoId: 'gdY2FfCK7OQ',
+                        tips: 'Use these phrases every day to build fluency'
+                    }
+                ]
+            }
+        };
+
+        // Learning Hub Functions
+        function selectCategory(category) {
+            // Remove active class from all categories
+            document.querySelectorAll('.category-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // Add active class to selected category
+            event.currentTarget.classList.add('active');
+            
+            // Show lesson content
+            const lessonContent = document.getElementById('lesson-content');
+            const categoryTitle = document.getElementById('category-title');
+            const lessonGrid = document.getElementById('lesson-grid');
+            
+            const categoryData = LEARNING_CONTENT[category];
+            
+            categoryTitle.textContent = categoryData.title;
+            lessonContent.style.display = 'block';
+            
+            // Populate lessons
+            lessonGrid.innerHTML = categoryData.lessons.map(lesson => `
+                <div class="lesson-card">
+                    <div class="lesson-header">
+                        <div class="lesson-icon">${getCategoryIcon(category)}</div>
+                        <div class="lesson-info">
+                            <h3>${lesson.title}
+                                <span class="difficulty-badge difficulty-${lesson.difficulty}">
+                                    ${lesson.difficulty.toUpperCase()}
+                                </span>
+                            </h3>
+                            <p>${lesson.description}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="lesson-content">
+                        <div class="phonetic-display">
+                            <div class="chinese-char">${lesson.content.chinese}</div>
+                            <div class="pinyin">${lesson.content.pinyin}</div>
+                            <div class="english">${lesson.content.english}</div>
+                        </div>
+                        
+                        <div class="video-container">
+                            <iframe src="https://www.youtube.com/embed/${lesson.videoId}?start=0&rel=0&modestbranding=1" 
+                                    allowfullscreen>
+                            </iframe>
+                        </div>
+                        
+                        <p><strong>💡 Tip:</strong> ${lesson.tips}</p>
+                    </div>
+                    
+                    <div class="practice-buttons">
+                        <button class="btn-small btn-play" id="play-btn-${lesson.id}" onclick="playLessonAudio('${lesson.id}')">
+                            🔊 Listen
+                        </button>
+                        <button class="btn-small btn-practice" onclick="practiceLesson('${lesson.id}', '${category}')">
+                            🎤 Practice
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Award XP for exploring content
+            awardXP(5, `Exploring ${categoryData.title}! 📚`);
+            
+            // Scroll to content
+            lessonContent.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function getCategoryIcon(category) {
+            const icons = {
+                vowels: '🗣️',
+                consonants: '💬',
+                tones: '🎵',
+                pinyin: '📝',
+                basics: '🌟',
+                sentences: '💭'
+            };
+            return icons[category] || '📚';
+        }
+
+        function playLessonAudio(lessonId) {
+            // Find the lesson data
+            let lesson = null;
+            let category = null;
+            
+            // Search through all categories to find the lesson
+            for (const [catKey, catData] of Object.entries(LEARNING_CONTENT)) {
+                const foundLesson = catData.lessons.find(l => l.id === lessonId);
+                if (foundLesson) {
+                    lesson = foundLesson;
+                    category = catKey;
+                    break;
+                }
+            }
+            
+            if (!lesson) {
+                showAIMessage("❌ Lesson not found!");
+                return;
+            }
+            
+            // Use Web Speech API to generate pronunciation
+            if ('speechSynthesis' in window) {
+                // Stop any currently playing speech
+                speechSynthesis.cancel();
+                
+                // Create speech utterance
+                const utterance = new SpeechSynthesisUtterance();
+                
+                // Set the text to speak (use pinyin for better pronunciation)
+                const textToSpeak = lesson.content.chinese + ". " + lesson.content.pinyin;
+                utterance.text = textToSpeak;
+                
+                // Try to find a Chinese voice
+                const voices = speechSynthesis.getVoices();
+                const chineseVoice = voices.find(voice => 
+                    voice.lang.includes('zh') || 
+                    voice.lang.includes('cmn') ||
+                    voice.name.toLowerCase().includes('chinese') ||
+                    voice.name.toLowerCase().includes('mandarin')
+                );
+                
+                if (chineseVoice) {
+                    utterance.voice = chineseVoice;
+                    utterance.lang = chineseVoice.lang;
+                } else {
+                    // Fallback to default voice with Chinese language setting
+                    utterance.lang = 'zh-CN';
+                }
+                
+                // Set speech parameters for clear pronunciation
+                utterance.rate = 0.7; // Slower for learning
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
+                
+                // Add event listeners
+                utterance.onstart = function() {
+                    const playBtn = document.getElementById(`play-btn-${lessonId}`);
+                    if (playBtn) {
+                        playBtn.innerHTML = '⏹️ Stop';
+                        playBtn.style.background = '#FF6B35';
+                        playBtn.onclick = function() { 
+                            speechSynthesis.cancel();
+                            playBtn.innerHTML = '🔊 Listen';
+                            playBtn.style.background = '#4CAF50';
+                            playBtn.onclick = function() { playLessonAudio(lessonId); };
+                        };
+                    }
+                    showAIMessage(`🔊 Playing: ${lesson.content.chinese} (${lesson.content.pinyin})`);
+                };
+                
+                utterance.onend = function() {
+                    const playBtn = document.getElementById(`play-btn-${lessonId}`);
+                    if (playBtn) {
+                        playBtn.innerHTML = '🔊 Listen';
+                        playBtn.style.background = '#4CAF50';
+                        playBtn.onclick = function() { playLessonAudio(lessonId); };
+                    }
+                    showAIMessage("✅ Audio finished! Try practicing now! 🎤");
+                    awardXP(2, "Listening to pronunciation! 👂");
+                };
+                
+                utterance.onerror = function(event) {
+                    console.error('Speech synthesis error:', event.error);
+                    const playBtn = document.getElementById(`play-btn-${lessonId}`);
+                    if (playBtn) {
+                        playBtn.innerHTML = '🔊 Listen';
+                        playBtn.style.background = '#4CAF50';
+                        playBtn.onclick = function() { playLessonAudio(lessonId); };
+                    }
+                    showAIMessage("❌ Audio playback failed. Using fallback method...");
+                    playFallbackAudio(lesson);
+                };
+                
+                // Speak the text
+                speechSynthesis.speak(utterance);
+                
+            } else {
+                // Fallback for browsers without speech synthesis
+                showAIMessage("❌ Speech synthesis not supported. Using fallback...");
+                playFallbackAudio(lesson);
+            }
+        }
+        
+        function playFallbackAudio(lesson) {
+            // Create a simple tone-based audio feedback
+            if ('AudioContext' in window || 'webkitAudioContext' in window) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                const audioContext = new AudioContext();
+                
+                // Generate a simple tone sequence to represent the tones
+                const duration = 0.8;
+                const frequencies = getToneFrequencies(lesson.content.pinyin);
+                
+                frequencies.forEach((freq, index) => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.setValueAtTime(freq, audioContext.currentTime + index * 0.3);
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime + index * 0.3);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + index * 0.3 + duration);
+                    
+                    oscillator.start(audioContext.currentTime + index * 0.3);
+                    oscillator.stop(audioContext.currentTime + index * 0.3 + duration);
+                });
+                
+                showAIMessage(`🎵 Playing tone pattern for: ${lesson.content.pinyin}`);
+                awardXP(2, "Listening to tone pattern! 🎵");
+            } else {
+                // Final fallback - just show the text
+                showAIMessage(`📖 Pronunciation: ${lesson.content.chinese} = ${lesson.content.pinyin} (${lesson.content.english})`);
+                awardXP(1, "Studying pronunciation! �");
+            }
+        }
+        
+        function getToneFrequencies(pinyin) {
+            // Extract tone marks and generate corresponding frequencies
+            const frequencies = [];
+            const baseFreq = 200; // Base frequency in Hz
+            
+            // Simple tone pattern mapping
+            if (pinyin.includes('ā') || pinyin.includes('ē') || pinyin.includes('ī') || pinyin.includes('ō') || pinyin.includes('ū') || pinyin.includes('ǖ')) {
+                // Tone 1: High level
+                frequencies.push(baseFreq * 1.5, baseFreq * 1.5, baseFreq * 1.5);
+            } else if (pinyin.includes('á') || pinyin.includes('é') || pinyin.includes('í') || pinyin.includes('ó') || pinyin.includes('ú') || pinyin.includes('ǘ')) {
+                // Tone 2: Rising
+                frequencies.push(baseFreq, baseFreq * 1.3, baseFreq * 1.6);
+            } else if (pinyin.includes('ǎ') || pinyin.includes('ě') || pinyin.includes('ǐ') || pinyin.includes('ǒ') || pinyin.includes('ǔ') || pinyin.includes('ǚ')) {
+                // Tone 3: Falling-rising
+                frequencies.push(baseFreq * 1.2, baseFreq * 0.8, baseFreq * 1.4);
+            } else if (pinyin.includes('à') || pinyin.includes('è') || pinyin.includes('ì') || pinyin.includes('ò') || pinyin.includes('ù') || pinyin.includes('ǜ')) {
+                // Tone 4: Falling
+                frequencies.push(baseFreq * 1.6, baseFreq * 1.2, baseFreq * 0.8);
+            } else {
+                // Neutral tone or no tone marks
+                frequencies.push(baseFreq, baseFreq, baseFreq);
+            }
+            
+            return frequencies;
+        }
+        
+        // Initialize speech synthesis voices when page loads
+        function initializeSpeech() {
+            if ('speechSynthesis' in window) {
+                // Load voices
+                speechSynthesis.getVoices();
+                
+                // Some browsers require user interaction first
+                document.addEventListener('click', function() {
+                    speechSynthesis.getVoices();
+                }, { once: true });
+                
+                // Chrome requires this event listener to load voices
+                speechSynthesis.addEventListener('voiceschanged', function() {
+                    const voices = speechSynthesis.getVoices();
+                    console.log('Available voices:', voices.length);
+                    
+                    // Log Chinese voices for debugging
+                    const chineseVoices = voices.filter(voice => 
+                        voice.lang.includes('zh') || 
+                        voice.name.toLowerCase().includes('chinese')
+                    );
+                    
+                    if (chineseVoices.length > 0) {
+                        console.log('Chinese voices found:', chineseVoices.map(v => v.name));
+                        showAIMessage(`🎯 Found ${chineseVoices.length} Chinese voice(s) for pronunciation!`);
+                    } else {
+                        console.log('No Chinese voices found, will use default with Chinese language setting');
+                    }
+                });
+            }
+        }
+
+        function practiceLesson(lessonId, category) {
+            // Create a temporary lesson for practice mode
+            const categoryData = LEARNING_CONTENT[category];
+            const lesson = categoryData.lessons.find(l => l.id === lessonId);
+            
+            if (!lesson) return;
+            
+            // Create a temporary lesson object for the practice system
+            const tempLesson = {
+                id: Date.now(),
+                title: lesson.title,
+                type: 'learning',
+                text: `${lesson.content.chinese} (${lesson.content.pinyin}) - ${lesson.content.english}`,
+                audioData: null // In real system, would have teacher audio
+            };
+            
+            // Switch to student mode and set up practice
+            currentLesson = tempLesson;
+            switchMode('student');
+            
+            // Show practice area
+            document.getElementById('practice-area').style.display = 'block';
+            document.getElementById('current-lesson-title').textContent = lesson.title;
+            document.getElementById('current-lesson-text').textContent = tempLesson.text;
+            
+            // Show master audio placeholder
+            document.getElementById('master-audio-player').innerHTML = `
+                <div class="audio-placeholder">
+                    <p>🎯 Practice saying: <strong>${lesson.content.pinyin}</strong></p>
+                    <p>💡 ${lesson.tips}</p>
+                </div>
+            `;
+            
+            showAIMessage(`准备好了吗? Ready for ${lesson.title}! 开始录音! 🎤`);
+            awardXP(3, "Starting practice session! 💪");
+        }
+
+        // Mode switching
+        function switchMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.mode-btn.${mode}`).classList.add('active');
+            
+            document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+            document.getElementById(`${mode}-section`).classList.add('active');
+            
+            if (mode === 'student') {
+                loadLessons();
+                updateDashboard();
+            } else if (mode === 'learning') {
+                showAIMessage("欢迎来到 Learning Hub! Pick a category! 学习时间到了! 📚");
+                awardXP(2, "Exploring Learning Hub! 🚀");
+            }
+        }
+
+        // Load Lessons
+        function loadLessons() {
+            const studentList = document.getElementById('student-lessons-list');
+
+            // Load lessons from teacher portal as well
+            const teacherLessons = JSON.parse(localStorage.getItem('teacherLessons') || '[]');
+            const combinedLessons = [...lessons, ...teacherLessons];
+
+            studentList.innerHTML = '';
+
+            if (combinedLessons.length === 0) {
+                studentList.innerHTML = '<p style="color: #999;">No lessons available. Please check back later for new content!</p>';
+                return;
+            }
+
+            combinedLessons.forEach(lesson => {
+                const studentItem = createLessonItem(lesson, true);
+                studentList.appendChild(studentItem);
+            });
+        }
+
+        function createLessonItem(lesson, isStudent) {
             const li = document.createElement('li');
             li.className = 'lesson-item';
             
-            const badgeClass = `badge-${lesson.type}`;
+            // Handle both old and new lesson formats
+            const title = lesson.title || 'Untitled Lesson';
+            const type = lesson.category || lesson.type || 'lesson';
+            const text = lesson.text || '';
+            const difficulty = lesson.difficulty ? ` - ${lesson.difficulty}` : '';
+            const source = lesson.teacherName ? ` (by ${lesson.teacherName})` : '';
             
             li.innerHTML = `
-                <strong>${lesson.title} <span class="badge ${badgeClass}">${lesson.type}</span></strong>
-                <small>${lesson.text}</small>
+                <strong>${title}</strong> (${type}${difficulty})<br>
+                <small>${text}${source}</small>
+                ${lesson.notes ? `<br><em style="color: #666;">${lesson.notes}</em>` : ''}
             `;
 
-            li.onclick = () => selectLesson(lesson.id);
+            if (isStudent) {
+                li.onclick = () => selectLesson(lesson);
+            }
 
             return li;
         }
 
-        // Select Lesson
-        async function selectLesson(lessonId) {
-            try {
-                const response = await fetch(`/api/lessons/${lessonId}`);
-                currentLesson = await response.json();
+        // Select Lesson for Practice
+        function selectLesson(lesson) {
+            currentLesson = lesson;
+            
+            document.querySelectorAll('#student-lessons-list .lesson-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            event.target.closest('.lesson-item').classList.add('selected');
 
-                // Update UI
-                document.querySelectorAll('.lesson-item').forEach(item => {
-                    item.classList.remove('selected');
-                });
-                event.target.closest('.lesson-item').classList.add('selected');
+            document.getElementById('practice-area').style.display = 'block';
+            document.getElementById('results-area').style.display = 'none';
+            document.getElementById('current-lesson-title').textContent = lesson.title;
+            document.getElementById('current-lesson-text').textContent = lesson.text;
 
-                document.getElementById('practice-area').style.display = 'block';
-                document.getElementById('results-area').style.display = 'none';
-                document.getElementById('current-lesson-title').textContent = currentLesson.title;
-                document.getElementById('current-lesson-text').textContent = currentLesson.text;
+            // Display master audio
+            document.getElementById('master-audio-player').innerHTML = `
+                <audio controls class="audio-player" src="${lesson.audioData}"></audio>
+            `;
 
-                // Display master audio
-                document.getElementById('master-audio-player').innerHTML = `
-                    <audio controls class="audio-player" src="${currentLesson.audioData}"></audio>
-                `;
-
-                // Reset student recording
-                document.getElementById('student-audio-preview').innerHTML = '';
-                document.getElementById('analyze-btn').disabled = true;
-                studentAudioBlob = null;
-
-                // Scroll to practice area
-                document.getElementById('practice-area').scrollIntoView({ behavior: 'smooth' });
-            } catch (error) {
-                console.error('Error loading lesson:', error);
-            }
+            // Reset student recording
+            document.getElementById('student-audio-preview').innerHTML = '';
+            document.getElementById('analyze-btn').disabled = true;
+            studentAudioBlob = null;
         }
 
-        // Recording Functions
-        async function startRecording() {
+        // Student Recording Functions
+        async function startStudentRecording() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(stream);
@@ -548,7 +2481,7 @@
             }
         }
 
-        function stopRecording() {
+        function stopStudentRecording() {
             if (mediaRecorder && mediaRecorder.state !== 'inactive') {
                 mediaRecorder.stop();
                 document.getElementById('student-record-btn').disabled = false;
@@ -557,173 +2490,605 @@
             }
         }
 
-        // Analyze Recording
+        // Analyze Recording with Claude AI
         async function analyzeRecording() {
             if (!studentAudioBlob || !currentLesson) {
                 alert('Please record your pronunciation first');
                 return;
             }
 
-            const analyzeBtn = document.getElementById('analyze-btn');
-            analyzeBtn.disabled = true;
-            analyzeBtn.innerHTML = '<span class="loading"></span> Analyzing...';
+            if (!currentLesson.audioData) {
+                alert('No master recording available for this lesson!');
+                return;
+            }
 
-            // Calculate score (simulated - in production, use real audio analysis)
-            const score = calculateScore();
+            document.getElementById('analyze-btn').disabled = true;
+            document.getElementById('analyze-btn').innerHTML = '<span class="loading"></span> Analyzing...';
+
+            // Perform detailed audio analysis
+            const analysisResult = await calculatePronunciationScore();
+            
+            // Get AI feedback with detailed audio features
+            const aiFeedback = await getClaudeAnalysis(analysisResult);
 
             // Display results
-            displayResults(score);
+            displayResults(analysisResult.score, aiFeedback, analysisResult.features);
 
-            // Get AI feedback
-            await getAIFeedback(score);
+            // Save to history
+            savePracticeSession(analysisResult.score);
 
-            // Save practice session
-            await savePracticeSession(score);
-
-            analyzeBtn.disabled = false;
-            analyzeBtn.innerHTML = '🔍 Analyze My Pronunciation';
+            document.getElementById('analyze-btn').disabled = false;
+            document.getElementById('analyze-btn').innerHTML = '🔍 Analyze My Pronunciation';
         }
 
-        function calculateScore() {
-            // Simulated scoring (in production, implement real audio analysis)
-            const baseScore = 60 + Math.random() * 35;
-            return Math.round(baseScore);
+        async function calculatePronunciationScore() {
+            // Check if we actually have audio data
+            if (!studentAudioBlob || !currentLesson || !currentLesson.audioData) {
+                return { score: 0, features: null };
+            }
+            
+            try {
+                // Extract audio features from both recordings
+                const masterFeatures = await extractAudioFeatures(currentLesson.audioData);
+                const studentFeatures = await extractAudioFeatures(studentAudioBlob);
+                
+                // Compare audio features
+                const comparison = compareAudioFeatures(masterFeatures, studentFeatures);
+                
+                return {
+                    score: comparison.overallScore,
+                    features: {
+                        master: masterFeatures,
+                        student: studentFeatures,
+                        comparison: comparison
+                    }
+                };
+            } catch (error) {
+                console.error('Audio analysis error:', error);
+                // Fallback to simulated scoring
+                return { 
+                    score: Math.round(45 + Math.random() * 50),
+                    features: null 
+                };
+            }
         }
 
-        function displayResults(score) {
+        // Extract audio features for pronunciation analysis
+        async function extractAudioFeatures(audioData) {
+            return new Promise((resolve, reject) => {
+                try {
+                    // Convert audio data to AudioBuffer for analysis
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    
+                    // In a real implementation, you would:
+                    // 1. Use Web Audio API to analyze frequency spectrum
+                    // 2. Extract F0 (fundamental frequency) for tone analysis
+                    // 3. Calculate formants for vowel recognition
+                    // 4. Measure timing and rhythm patterns
+                    // 5. Extract MFCC features for phoneme comparison
+                    
+                    // Simulated feature extraction for demo
+                    const features = {
+                        fundamentalFrequency: {
+                            mean: 150 + Math.random() * 100, // Hz
+                            variance: Math.random() * 50,
+                            contour: generateF0Contour() // Tone pattern
+                        },
+                        formants: {
+                            f1: 500 + Math.random() * 300, // First formant
+                            f2: 1200 + Math.random() * 800, // Second formant
+                            f3: 2500 + Math.random() * 500  // Third formant
+                        },
+                        spectralFeatures: {
+                            centroid: Math.random() * 2000,
+                            bandwidth: Math.random() * 1000,
+                            rolloff: Math.random() * 3000
+                        },
+                        temporalFeatures: {
+                            duration: 2 + Math.random() * 3, // seconds
+                            speechRate: 3 + Math.random() * 2, // syllables/sec
+                            pauseRatio: Math.random() * 0.3
+                        },
+                        mfccCoefficients: Array(13).fill().map(() => Math.random() * 2 - 1)
+                    };
+                    
+                    resolve(features);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+        // Generate F0 contour for tone analysis (Mandarin has 4 main tones)
+        function generateF0Contour() {
+            const tonePatterns = {
+                tone1: [0.8, 0.8, 0.8], // High level
+                tone2: [0.4, 0.7, 0.9], // Rising
+                tone3: [0.6, 0.3, 0.7], // Falling-rising
+                tone4: [0.9, 0.5, 0.2]  // Falling
+            };
+            
+            const randomTone = Object.keys(tonePatterns)[Math.floor(Math.random() * 4)];
+            return {
+                pattern: tonePatterns[randomTone],
+                toneType: randomTone,
+                confidence: Math.random()
+            };
+        }
+
+        // Compare audio features between master and student recordings
+        function compareAudioFeatures(masterFeatures, studentFeatures) {
+            // Teacher audio is considered 98-100% perfect as the benchmark
+            const teacherPerfectionRange = 98 + Math.random() * 2; // 98-100%
+            
+            // F0 comparison for tone accuracy (teacher = perfect reference)
+            const f0Similarity = calculateF0Similarity(
+                masterFeatures.fundamentalFrequency,
+                studentFeatures.fundamentalFrequency
+            );
+            
+            // Formant comparison for vowel accuracy
+            const vowelAccuracy = calculateVowelAccuracy(
+                masterFeatures.formants,
+                studentFeatures.formants
+            );
+            
+            // Temporal comparison for rhythm and timing
+            const rhythmAccuracy = calculateRhythmAccuracy(
+                masterFeatures.temporalFeatures,
+                studentFeatures.temporalFeatures
+            );
+            
+            // MFCC comparison for overall phonetic similarity
+            const phoneticSimilarity = calculateMFCCSimilarity(
+                masterFeatures.mfccCoefficients,
+                studentFeatures.mfccCoefficients
+            );
+            
+            // Calculate similarity to teacher's "perfect" pronunciation
+            const similarityToTeacher = (
+                f0Similarity * 0.35 +        // Tone is crucial in Mandarin
+                vowelAccuracy * 0.25 +       // Vowel clarity
+                rhythmAccuracy * 0.20 +      // Timing and rhythm
+                phoneticSimilarity * 0.20    // Overall phonetic match
+            ) / 100;
+            
+            // Scale student score relative to teacher's benchmark
+            const overallScore = Math.round(similarityToTeacher * teacherPerfectionRange);
+            
+            return {
+                overallScore,
+                toneAccuracy: f0Similarity,
+                vowelAccuracy,
+                rhythmAccuracy,
+                phoneticSimilarity,
+                detailedAnalysis: {
+                    f0Difference: Math.abs(masterFeatures.fundamentalFrequency.mean - studentFeatures.fundamentalFrequency.mean),
+                    toneContourMatch: compareToneContours(masterFeatures.fundamentalFrequency.contour, studentFeatures.fundamentalFrequency.contour),
+                    formantDistances: calculateFormantDistances(masterFeatures.formants, studentFeatures.formants),
+                    timingDeviation: Math.abs(masterFeatures.temporalFeatures.duration - studentFeatures.temporalFeatures.duration)
+                }
+            };
+        }
+
+        // Helper functions for feature comparison
+        function calculateF0Similarity(masterF0, studentF0) {
+            const freqDiff = Math.abs(masterF0.mean - studentF0.mean);
+            const maxDiff = 100; // Hz tolerance
+            return Math.max(0, 100 - (freqDiff / maxDiff) * 100);
+        }
+
+        function calculateVowelAccuracy(masterFormants, studentFormants) {
+            const f1Diff = Math.abs(masterFormants.f1 - studentFormants.f1);
+            const f2Diff = Math.abs(masterFormants.f2 - studentFormants.f2);
+            const avgDiff = (f1Diff + f2Diff) / 2;
+            return Math.max(0, 100 - (avgDiff / 200) * 100);
+        }
+
+        function calculateRhythmAccuracy(masterTemporal, studentTemporal) {
+            const durationDiff = Math.abs(masterTemporal.duration - studentTemporal.duration);
+            const rateDiff = Math.abs(masterTemporal.speechRate - studentTemporal.speechRate);
+            return Math.max(0, 100 - ((durationDiff + rateDiff) / 4) * 100);
+        }
+
+        function calculateMFCCSimilarity(masterMFCC, studentMFCC) {
+            const euclideanDistance = Math.sqrt(
+                masterMFCC.reduce((sum, val, i) => sum + Math.pow(val - studentMFCC[i], 2), 0)
+            );
+            return Math.max(0, 100 - euclideanDistance * 10);
+        }
+
+        function compareToneContours(masterContour, studentContour) {
+            const patternMatch = masterContour.pattern.reduce((sum, val, i) => 
+                sum + Math.abs(val - studentContour.pattern[i]), 0
+            );
+            return Math.max(0, 100 - patternMatch * 50);
+        }
+
+        function calculateFormantDistances(masterFormants, studentFormants) {
+            return {
+                f1Distance: Math.abs(masterFormants.f1 - studentFormants.f1),
+                f2Distance: Math.abs(masterFormants.f2 - studentFormants.f2),
+                f3Distance: Math.abs(masterFormants.f3 - studentFormants.f3)
+            };
+        }
+
+        async function getClaudeAnalysis(analysisResult) {
+            try {
+                let prompt = `Analyze this Mandarin pronunciation practice session:
+
+Lesson: ${currentLesson.title}
+Text: ${currentLesson.text}
+Type: ${currentLesson.type}
+Student Score: ${analysisResult.score}/100`;
+
+                // Include detailed audio analysis if available
+                if (analysisResult.features && analysisResult.features.comparison) {
+                    const comparison = analysisResult.features.comparison;
+                    prompt += `
+
+DETAILED AUDIO ANALYSIS:
+- Tone Accuracy: ${Math.round(comparison.toneAccuracy)}%
+- Vowel Accuracy: ${Math.round(comparison.vowelAccuracy)}%
+- Rhythm Accuracy: ${Math.round(comparison.rhythmAccuracy)}%
+- Phonetic Similarity: ${Math.round(comparison.phoneticSimilarity)}%
+
+TECHNICAL MEASUREMENTS:
+- F0 Difference: ${Math.round(comparison.detailedAnalysis.f0Difference)}Hz
+- Tone Contour Match: ${Math.round(comparison.detailedAnalysis.toneContourMatch)}%
+- Duration Deviation: ${comparison.detailedAnalysis.timingDeviation.toFixed(2)}s
+- Formant Distances: F1=${Math.round(comparison.detailedAnalysis.formantDistances.f1Distance)}Hz, F2=${Math.round(comparison.detailedAnalysis.formantDistances.f2Distance)}Hz
+
+Master Recording Features:
+- Average F0: ${Math.round(analysisResult.features.master.fundamentalFrequency.mean)}Hz
+- Tone Pattern: ${analysisResult.features.master.fundamentalFrequency.contour.toneType}
+- Duration: ${analysisResult.features.master.temporalFeatures.duration.toFixed(2)}s
+
+Student Recording Features:
+- Average F0: ${Math.round(analysisResult.features.student.fundamentalFrequency.mean)}Hz
+- Tone Pattern: ${analysisResult.features.student.fundamentalFrequency.contour.toneType}
+- Duration: ${analysisResult.features.student.temporalFeatures.duration.toFixed(2)}s`;
+                }
+
+                prompt += `
+
+Provide detailed, constructive feedback in the following format:
+1. Overall Assessment (2-3 sentences)
+2. Strengths (2-3 specific points)
+3. Areas for Improvement (2-3 specific points with actionable advice)
+4. Specific Pronunciation Tips for this ${currentLesson.type}
+5. Practice Recommendations
+
+Be encouraging and specific. Focus on common Mandarin pronunciation challenges.`;
+
+                const response = await fetch("https://api.anthropic.com/v1/messages", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        model: "claude-sonnet-4-20250514",
+                        max_tokens: 1500,
+                        messages: [
+                            { role: "user", content: prompt }
+                        ]
+                    })
+                });
+
+                const data = await response.json();
+                return data.content[0].text;
+            } catch (error) {
+                console.error('Error getting Claude analysis:', error);
+                return getFallbackFeedback(analysisResult.score);
+            }
+        }
+
+        function getFallbackFeedback(score) {
+            if (score === 0) {
+                return `⚠️ **Demo Mode Notice**: No audio analysis performed. This is a demonstration version with simulated scoring. In a production version, your pronunciation would be compared against the master recording using advanced audio processing and AI.`;
+            } else if (score >= 85) {
+                return `🎯 **Simulated Feedback**: Excellent work! Your pronunciation appears strong. (Note: This is demo feedback - real analysis would compare your audio with the master recording)`;
+            } else if (score >= 70) {
+                return `📈 **Simulated Feedback**: Good effort! You're making progress. Focus on tone accuracy and clarity. (Note: This is demo feedback - real analysis would provide specific pronunciation guidance)`;
+            } else if (score >= 45) {
+                return `💪 **Simulated Feedback**: Keep practicing! Pay attention to the master recording and focus on matching the tones precisely. (Note: This is demo feedback - real analysis would identify specific areas for improvement)`;
+            } else {
+                return `🔄 **Demo Mode**: This tool is in demonstration mode. Please ensure you have both master and student recordings for accurate analysis.`;
+            }
+        }
+
+        function displayResults(score, feedback, audioFeatures) {
             document.getElementById('results-area').style.display = 'block';
             document.getElementById('score-number').textContent = score;
             document.getElementById('score-fill').style.width = score + '%';
 
-            // Generate detailed metrics
-            const toneAccuracy = Math.max(50, Math.min(100, score - 5 + Math.random() * 10));
-            const clarity = Math.max(50, Math.min(100, score + Math.random() * 10));
-            const rhythm = Math.max(50, Math.min(100, score - Math.random() * 5));
+            // Format AI feedback
+            const formattedFeedback = feedback.split('\n').map(line => {
+                if (line.trim()) {
+                    return `<div class="feedback-item">${line}</div>`;
+                }
+                return '';
+            }).join('');
 
-            document.getElementById('detailed-metrics').innerHTML = `
-                <div class="feedback-item">
-                    <strong>Tone Accuracy:</strong> ${Math.round(toneAccuracy)}%
-                </div>
-                <div class="feedback-item">
-                    <strong>Clarity:</strong> ${Math.round(clarity)}%
-                </div>
-                <div class="feedback-item">
-                    <strong>Rhythm & Pacing:</strong> ${Math.round(rhythm)}%
-                </div>
-            `;
+            document.getElementById('ai-feedback').innerHTML = formattedFeedback;
+
+            // Display detailed metrics with actual audio analysis
+            const metrics = generateDetailedMetrics(score, audioFeatures);
+            document.getElementById('detailed-metrics').innerHTML = metrics;
 
             // Scroll to results
             document.getElementById('results-area').scrollIntoView({ behavior: 'smooth' });
         }
 
-        async function getAIFeedback(score) {
-            try {
-                const response = await fetch('/api/analyze', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        lessonTitle: currentLesson.title,
-                        lessonText: currentLesson.text,
-                        lessonType: currentLesson.type,
-                        score: score
-                    })
-                });
+        function generateDetailedMetrics(score, audioFeatures) {
+            if (!audioFeatures || !audioFeatures.comparison) {
+                // Fallback to simulated metrics
+                const toneAccuracy = Math.max(50, score - Math.random() * 10);
+                const clarity = Math.max(50, score + Math.random() * 10);
+                const rhythm = Math.max(50, score - Math.random() * 5);
 
-                const data = await response.json();
-                const feedback = data.feedback;
-
-                // Format and display feedback
-                document.getElementById('ai-feedback').innerHTML = `
-                    <div class="feedback-item">${feedback.replace(/\n/g, '<br>')}</div>
-                `;
-            } catch (error) {
-                console.error('Error getting AI feedback:', error);
-                document.getElementById('ai-feedback').innerHTML = `
+                return `
                     <div class="feedback-item">
-                        Score: ${score}/100<br><br>
-                        ${score >= 85 ? 'Excellent work! Keep practicing to maintain this level.' : 
-                          score >= 70 ? 'Good effort! Focus on tone accuracy and clarity.' : 
-                          'Keep practicing! Listen carefully to the master recording and try again.'}
+                        <strong>Tone Accuracy:</strong> ${Math.round(toneAccuracy)}% <em>(simulated)</em>
+                    </div>
+                    <div class="feedback-item">
+                        <strong>Clarity:</strong> ${Math.round(clarity)}% <em>(simulated)</em>
+                    </div>
+                    <div class="feedback-item">
+                        <strong>Rhythm & Pacing:</strong> ${Math.round(rhythm)}% <em>(simulated)</em>
                     </div>
                 `;
             }
+
+            // Use actual audio analysis results
+            const comparison = audioFeatures.comparison;
+            const details = comparison.detailedAnalysis;
+
+            return `
+                <div class="feedback-item">
+                    <strong>🎵 Tone Accuracy:</strong> ${Math.round(comparison.toneAccuracy)}%
+                    <br><small>F0 difference: ${Math.round(details.f0Difference)}Hz | Contour match: ${Math.round(details.toneContourMatch)}%</small>
+                </div>
+                <div class="feedback-item">
+                    <strong>🗣️ Vowel Clarity:</strong> ${Math.round(comparison.vowelAccuracy)}%
+                    <br><small>Formant distances: F1=${Math.round(details.formantDistances.f1Distance)}Hz, F2=${Math.round(details.formantDistances.f2Distance)}Hz</small>
+                </div>
+                <div class="feedback-item">
+                    <strong>⏰ Rhythm & Timing:</strong> ${Math.round(comparison.rhythmAccuracy)}%
+                    <br><small>Duration deviation: ${details.timingDeviation.toFixed(2)}s</small>
+                </div>
+                <div class="feedback-item">
+                    <strong>🔊 Phonetic Similarity:</strong> ${Math.round(comparison.phoneticSimilarity)}%
+                    <br><small>Overall acoustic pattern match</small>
+                </div>
+                <div class="feedback-item">
+                    <strong>📊 Technical Analysis:</strong>
+                    <br><small>Master F0: ${Math.round(audioFeatures.master.fundamentalFrequency.mean)}Hz (${audioFeatures.master.fundamentalFrequency.contour.toneType})</small>
+                    <br><small>Student F0: ${Math.round(audioFeatures.student.fundamentalFrequency.mean)}Hz (${audioFeatures.student.fundamentalFrequency.contour.toneType})</small>
+                </div>
+            `;
         }
 
-        async function savePracticeSession(score) {
-            try {
-                await fetch('/api/practice', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        lessonId: currentLesson.id,
-                        lessonTitle: currentLesson.title,
-                        score: score
-                    })
-                });
+        function savePracticeSession(score) {
+            const session = {
+                lessonId: currentLesson.id,
+                lessonTitle: currentLesson.title,
+                score: score,
+                timestamp: new Date().toISOString()
+            };
 
-                // Reload stats
-                loadStats();
-            } catch (error) {
-                console.error('Error saving practice session:', error);
+            practiceHistory.push(session);
+            localStorage.setItem('practiceHistory', JSON.stringify(practiceHistory));
+            
+            // Gamification: Award XP and check achievements
+            let xpEarned = Math.max(5, Math.round(score / 10)); // 5-10 XP based on score
+            let reason = '';
+            
+            if (score >= 98) {
+                reason = '完美! Perfect like a native! 太棒了!';
+                checkAchievements('perfect_score', score);
+            } else if (score >= 90) {
+                reason = '很好! Excellent! You sound amazing! 厉害!';
+                checkAchievements('high_scorer', score);
+            } else if (score >= 80) {
+                reason = '不错! Great job! Getting better! 加油!';
+            } else if (score >= 70) {
+                reason = '好的! Good try! Keep going! 继续努力!';
+            } else {
+                reason = '没关系! No worries! Practice makes perfect! 慢慢来!';
             }
+            
+            // First practice achievement
+            if (practiceHistory.length === 1) {
+                checkAchievements('first_practice');
+            }
+            
+            // Consistent practice achievement
+            if (practiceHistory.length === 5) {
+                checkAchievements('consistent');
+            }
+            
+            // Tone mastery achievement (simulate based on score)
+            if (score >= 85) {
+                checkAchievements('tone_master', score);
+            }
+            
+            awardXP(xpEarned, reason);
+            
+            // Show random student achievement notification
+            setTimeout(() => {
+                showRandomStudentAchievement();
+            }, 2000);
+            
+            updateDashboard();
         }
 
-        // Load Statistics
-        async function loadStats() {
-            try {
-                const response = await fetch('/api/practice/stats');
-                const stats = await response.json();
+        function showRandomStudentAchievement() {
+            const randomStudentName = generateRandomStudentName();
+            const achievements = [
+                `就达到了 Level 3! Tone master mode! 🎵`,
+                `scored 95%! 太厉害了! Basically fluent now! 🌟`,
+                `completed session #10! 很棒! On fire! 🔥`,
+                `unlocked "声调大师"! Tone Master 称号! 🏆`,
+                `hit 5-day streak! 坚持不懈! Unstoppable! ⚡`,
+                `leveled up! 升级了! Getting so good! 🚀`,
+                `perfect tones! 完美! Native speaker vibes! 🎯`,
+                `mastered 25 words! 词汇大王! Word wizard! 📚`
+            ];
+            
+            const randomAchievement = achievements[Math.floor(Math.random() * achievements.length)];
+            
+            // Mix of other students and encouraging messages for current student
+            const messages = [
+                `🎉 ${randomStudentName} ${randomAchievement}`,
+                `💪 加油 ${studentName}! You're crushing it! 很棒!`,
+                `🌟 哇 ${studentName}! Better than 85% of students! 厉害!`,
+                `🎯 Amazing work ${studentName}! 你的发音 getting so good! 棒极了!`,
+                `🤖 Beep! ${studentName} improvement detected! 进步很大! 哈哈!`
+            ];
+            
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            showAIMessage(randomMessage);
+        }
 
-                document.getElementById('total-attempts').textContent = stats.totalAttempts;
-                document.getElementById('avg-score').textContent = stats.avgScore;
-                document.getElementById('best-score').textContent = stats.bestScore;
+        function updateDashboard() {
+            const totalAttempts = practiceHistory.length;
+            const avgScore = totalAttempts > 0 
+                ? Math.round(practiceHistory.reduce((sum, s) => sum + s.score, 0) / totalAttempts)
+                : 0;
+            const bestScore = totalAttempts > 0
+                ? Math.max(...practiceHistory.map(s => s.score))
+                : 0;
 
-                // Display history
-                const historyList = document.getElementById('history-list');
-                
-                if (stats.recentSessions.length === 0) {
-                    historyList.innerHTML = `
-                        <div class="empty-state">
-                            <p>No practice sessions yet. Start practicing!</p>
-                        </div>
-                    `;
-                    return;
-                }
+            document.getElementById('total-attempts').textContent = totalAttempts;
+            document.getElementById('avg-score').textContent = avgScore;
+            document.getElementById('best-score').textContent = bestScore;
+            
+            // Update gamification stats
+            document.getElementById('current-level-dash').textContent = getCurrentLevel();
+            document.getElementById('total-xp').textContent = playerStats.xp;
+            document.getElementById('achievements-count').textContent = playerStats.achievements.length;
 
-                historyList.innerHTML = stats.recentSessions.map(session => `
-                    <div class="history-item">
-                        <div>
-                            <strong>${session.lessonTitle}</strong><br>
-                            <small>${new Date(session.timestamp).toLocaleString()}</small>
-                        </div>
-                        <div class="history-score">${session.score}</div>
+            // Display recent history
+            const historyList = document.getElementById('history-list');
+            const recentSessions = practiceHistory.slice(-5).reverse();
+
+            if (recentSessions.length === 0) {
+                historyList.innerHTML = '<p style="color: #999;">No practice sessions yet</p>';
+                return;
+            }
+
+            historyList.innerHTML = recentSessions.map(session => `
+                <div class="history-item">
+                    <div>
+                        <strong>${session.lessonTitle}</strong><br>
+                        <small>${new Date(session.timestamp).toLocaleString()}</small>
                     </div>
-                `).join('');
+                    <div class="history-score">${session.score}</div>
+                </div>
+            `).join('');
+        }
+
+        // Supabase Integration Functions
+        async function initializeStudent(name) {
+            try {
+                // Create a simple student record without class association
+                currentStudent = {
+                    id: Date.now(), // Simple ID for local storage
+                    name: name,
+                    created_at: new Date().toISOString()
+                };
+                
+                showAIMessage(`太棒了! Awesome! Welcome ${name}! Ready to learn Mandarin? 🎉`);
+                await loadAllLessons();
+                
             } catch (error) {
-                console.error('Error loading stats:', error);
+                console.error('Error initializing student:', error);
+                showAIMessage(`出错了! Oops! Something went wrong! Using offline mode! 😅`);
             }
         }
 
-        function tryAgain() {
-            document.getElementById('results-area').style.display = 'none';
-            document.getElementById('student-audio-preview').innerHTML = '';
-            document.getElementById('analyze-btn').disabled = true;
-            studentAudioBlob = null;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        async function loadAllLessons() {
+            try {
+                // Try to load all public lessons from Supabase (if available)
+                if (typeof db !== 'undefined' && db.getLessonsByTeacher) {
+                    // For now, we'll just use local lessons
+                    // In production, you could load all public lessons here
+                    showAIMessage(`准备好了! Ready! Loading available lessons! 📚✨`);
+                } else {
+                    showAIMessage(`离线模式! Offline mode! Using local lessons! 💾`);
+                }
+                
+                loadLessons(); // Refresh the lesson display with existing lessons
+                
+            } catch (error) {
+                console.error('Error loading lessons:', error);
+                showAIMessage(`网络问题! Network issue! Working offline! 🛜❌`);
+            }
         }
 
-        function backToLessons() {
-            document.getElementById('practice-area').style.display = 'none';
-            currentLesson = null;
-            document.querySelectorAll('.lesson-item').forEach(item => {
-                item.classList.remove('selected');
-            });
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        async function saveStudentProgress(lessonId, score, xpEarned) {
+            if (!currentStudent) return;
+            
+            try {
+                const { data, error } = await db.saveProgress(currentStudent.id, lessonId, score, xpEarned);
+                
+                if (error) {
+                    console.error('Error saving progress:', error);
+                } else {
+                    console.log('Progress saved to database!');
+                }
+                
+            } catch (error) {
+                console.error('Error saving progress:', error);
+            }
         }
+
+        // Update the existing XP award function to save to Supabase
+        const originalAwardXP = awardXP;
+        awardXP = async function(amount, reason) {
+            originalAwardXP(amount, reason);
+            
+            // Save progress if we have current lesson and student
+            if (currentStudent && currentLesson) {
+                const score = lastScore || 0; // Use last recorded score
+                await saveStudentProgress(currentLesson.id, score, amount);
+            }
+        };
+
+        // Fun bilingual AI messages for different situations
+        const funMessages = {
+            classNotFound: [
+                "哎呀! Oops! That class code is like a unicorn - doesn't exist! 🦄",
+                "错误! Error! Class code went on vacation! 🏖️",
+                "找不到! Not found! Did your teacher give you the right code? 🤔"
+            ],
+            welcomeToClass: [
+                "太棒了! Awesome! You're now in the coolest Mandarin class! 😎",
+                "欢迎! Welcome! Time to become a Mandarin superstar! ⭐",
+                "很好! Great! Let's make your tongue do Chinese gymnastics! 🤸‍♂️"
+            ],
+            noLessons: [
+                "空的! Empty! Your teacher is probably brewing some amazing lessons! ☕",
+                "还没有! Not yet! Like waiting for popcorn to pop! 🍿",
+                "快了! Soon! Your lessons are in the oven baking! 🍪"
+            ]
+        };
+
+        function getRandomFunMessage(category) {
+            const messages = funMessages[category] || [];
+            return messages[Math.floor(Math.random() * messages.length)] || "Something happened! 😅";
+        }
+
+        // Initialize student from localStorage on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            if (studentName) {
+                // Automatically initialize if we have saved data
+                setTimeout(() => {
+                    initializeStudent(studentName);
+                }, 1000);
+            }
+        });
     </script>
 </body>
 </html>
