@@ -248,7 +248,46 @@
         .student-name {
             font-size: 1.1em;
             font-weight: bold;
+        }
+
+        /* Teacher Portal Button */
+        .teacher-portal-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
             color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+            backdrop-filter: blur(10px);
+            display: none; /* Initially hidden */
+            z-index: 1000;
+        }
+
+        .teacher-portal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+            background: linear-gradient(135deg, #F7931E, #FF6B35);
+        }
+
+        .teacher-portal-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Responsive Teacher Portal Button */
+        @media (max-width: 768px) {
+            .teacher-portal-btn {
+                top: 15px;
+                right: 15px;
+                padding: 10px 16px;
+                font-size: 0.85em;
+            }
         }
 
         /* Responsive Design */
@@ -1143,6 +1182,11 @@
     </div>
 
     <div class="container" id="main-container" style="display: none;">
+        <!-- Teacher Portal Button (only visible to authenticated teachers) -->
+        <button class="teacher-portal-btn" id="teacher-portal-btn" onclick="goToTeacherPortal()">
+            👨‍🏫 Teacher Portal
+        </button>
+        
         <div class="header">
             <div class="binus-header">
                 <div class="school-info">
@@ -1407,6 +1451,8 @@
             showPersonalizedWelcome();
             initializeSpeech();
             updatePersonalizedHeader();
+            // Check if user has teacher access
+            checkTeacherAccess();
         }
 
         function startLearning() {
@@ -1461,6 +1507,36 @@
             
             document.getElementById('header-greeting').textContent = randomGreeting;
             document.getElementById('header-student-name').textContent = `BINUSIAN • ${studentName}`;
+        }
+
+        // Teacher Portal Functions
+        async function checkTeacherAccess() {
+            try {
+                // Check if user is authenticated as teacher
+                const { user, error } = await auth.getCurrentUser();
+                
+                if (user && !error) {
+                    // Check if user is an approved teacher
+                    const { data: teacher, error: teacherError } = await db.getTeacher(user.email);
+                    
+                    if (teacher && !teacherError) {
+                        // Show teacher portal button
+                        document.getElementById('teacher-portal-btn').style.display = 'block';
+                        return true;
+                    }
+                }
+            } catch (error) {
+                console.log('Teacher access check failed:', error);
+            }
+            
+            // Hide teacher portal button if not authenticated teacher
+            document.getElementById('teacher-portal-btn').style.display = 'none';
+            return false;
+        }
+
+        function goToTeacherPortal() {
+            // Redirect to teacher portal
+            window.location.href = 'teacher_portal.html';
         }
 
         function showPersonalizedWelcome() {
