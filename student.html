@@ -1410,8 +1410,27 @@
         </div>
     </footer>
 
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script src="supabase-config.js"></script>
+    <!-- Supabase is optional for students - only load if config is available -->
+    <script>
+        // Check if we need Supabase for this student page
+        const needsSupabase = false; // Students don't need authentication
+        
+        if (needsSupabase) {
+            // Only load Supabase if needed (for future features)
+            const supabaseScript = document.createElement('script');
+            supabaseScript.src = 'https://unpkg.com/@supabase/supabase-js@2';
+            document.head.appendChild(supabaseScript);
+            
+            supabaseScript.onload = () => {
+                const configScript = document.createElement('script');
+                configScript.src = 'supabase-config.js';
+                configScript.onerror = () => {
+                    console.log('Supabase config not available - using offline mode');
+                };
+                document.head.appendChild(configScript);
+            };
+        }
+    </script>
     <script>
         // Global variables
         let mediaRecorder;
@@ -2989,10 +3008,10 @@ Be encouraging and specific. Focus on common Mandarin pronunciation challenges.`
             `).join('');
         }
 
-        // Supabase Integration Functions
+        // Student Initialization (No Authentication Required)  
         async function initializeStudent(name) {
             try {
-                // Create a simple student record without class association
+                // Create a simple student record for offline mode
                 currentStudent = {
                     id: Date.now(), // Simple ID for local storage
                     name: name,
@@ -3004,19 +3023,29 @@ Be encouraging and specific. Focus on common Mandarin pronunciation challenges.`
                 
             } catch (error) {
                 console.error('Error initializing student:', error);
-                showAIMessage(`出错了! Oops! Something went wrong! Using offline mode! 😅`);
+                showAIMessage(`出错了! Oops! Something went wrong! Let's use offline mode! 😅`);
             }
         }
 
         async function loadAllLessons() {
             try {
-                // Try to load all public lessons from Supabase (if available)
-                if (typeof db !== 'undefined' && db.getLessonsByTeacher) {
-                    // For now, we'll just use local lessons
-                    // In production, you could load all public lessons here
-                    showAIMessage(`准备好了! Ready! Loading available lessons! 📚✨`);
+                // Students use local lessons primarily
+                showAIMessage(`准备好了! Ready! Loading practice lessons! 📚✨`);
+                
+                // Try to load from Supabase only if available (optional enhancement)
+                if (typeof db !== 'undefined' && db.getAllPublicLessons) {
+                    try {
+                        const { data: onlineLessons, error } = await db.getAllPublicLessons();
+                        if (onlineLessons && !error && onlineLessons.length > 0) {
+                            // Merge online lessons with local ones
+                            lessons = [...lessons, ...onlineLessons];
+                            showAIMessage(`太好了! Great! Found ${onlineLessons.length} online lessons too! 🌟`);
+                        }
+                    } catch (e) {
+                        console.log('Online lessons not available, using local lessons');
+                    }
                 } else {
-                    showAIMessage(`离线模式! Offline mode! Using local lessons! 💾`);
+                    showAIMessage(`离线模式! Offline mode! Using built-in lessons! 💾`);
                 }
                 
                 loadLessons(); // Refresh the lesson display with existing lessons
@@ -3031,20 +3060,30 @@ Be encouraging and specific. Focus on common Mandarin pronunciation challenges.`
             if (!currentStudent) return;
             
             try {
-                const { data, error } = await db.saveProgress(currentStudent.id, lessonId, score, xpEarned);
-                
-                if (error) {
-                    console.error('Error saving progress:', error);
+                // Only save to Supabase if available
+                if (typeof db !== 'undefined' && db.saveStudentProgress) {
+                    const { data, error } = await db.saveStudentProgress(
+                        currentStudent.name, 
+                        lessonId, 
+                        xpEarned, 
+                        playerStats.achievements
+                    );
+                    
+                    if (error) {
+                        console.log('Online progress save failed - using local storage only');
+                    } else {
+                        console.log('Progress saved online!');
+                    }
                 } else {
-                    console.log('Progress saved to database!');
+                    console.log('Using local storage for progress tracking');
                 }
                 
             } catch (error) {
-                console.error('Error saving progress:', error);
+                console.log('Online save not available - progress stored locally');
             }
         }
 
-        // Update the existing XP award function to save to Supabase
+        // Update the existing XP award function with optional Supabase saving
         const originalAwardXP = awardXP;
         awardXP = async function(amount, reason) {
             originalAwardXP(amount, reason);
